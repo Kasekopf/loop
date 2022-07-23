@@ -205,7 +205,7 @@ const GyouQuest: Quest<Task> = {
     },
     {
       name: "Pull All",
-      after: ["Volcano Initial"],
+      after: ["Ascend", "Volcano Initial"],
       completed: () => myStorageMeat() === 0 && storageAmount($item`festive warbear bank`) === 0, // arbitrary item,
       do: () => {
         cliExecute("pull all");
@@ -215,7 +215,7 @@ const GyouQuest: Quest<Task> = {
     },
     {
       name: "Tower",
-      after: ["Ascend", "Volcano Initial"],
+      after: ["Ascend", "Pull All", "Volcano Initial"],
       completed: () => step("questL13Final") > 11,
       do: () => cliExecute("loopgyou delaytower"),
       limit: { tries: 1 },
@@ -224,7 +224,7 @@ const GyouQuest: Quest<Task> = {
       name: "Volcano Final",
       after: ["Ascend", "Hotres", "Drill", "Tower"],
       completed: () => myAdventures() <= 40,
-      do: () => cliExecute(`minevolcano ${1000 - myTurncount()}`),
+      do: () => cliExecute(`minevolcano ${myAdventures() - 40}`),
       limit: { tries: 1 },
     },
     {
@@ -237,12 +237,13 @@ const GyouQuest: Quest<Task> = {
     },
     {
       name: "Level",
-      after: ["Ascend", "Prism"],
-      completed: () => myLevel() >= 13,
+      after: ["Ascend", "Prism", "Pull All"],
+      // eslint-disable-next-line libram/verify-constants
+      completed: () => myClass() !== $class`Grey Goo` && myLevel() >= 13,
       do: () => cliExecute("loopcasual goal=level"),
       limit: { tries: 1 },
     },
-    ...garboAscend(["Ascend", "Prism", "Level"]),
+    ...garboAscend(["Ascend", "Prism", "Pull All", "Level"]),
   ],
 };
 
