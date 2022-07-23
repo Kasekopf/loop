@@ -294,8 +294,15 @@ const CasualQuest: Quest<Task> = {
       limit: { tries: 1 },
     },
     {
-      name: "Garbo",
+      name: "Run",
       after: ["Ascend"],
+      completed: () => step("questL13Final") > 11,
+      do: () => cliExecute("loopcasual"),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Garbo",
+      after: ["Ascend", "Run"],
       completed: () => (myAdventures() === 0 && !canEat()) || myInebriety() > inebrietyLimit(),
       do: () => {
         if (have($item`can of Rain-Doh`) && !have($item`Rain-Doh blue balls`))
@@ -306,7 +313,7 @@ const CasualQuest: Quest<Task> = {
     },
     {
       name: "Nightcap",
-      after: ["Ascend", "Garbo"],
+      after: ["Ascend", "Run", "Garbo"],
       completed: () => myInebriety() > inebrietyLimit(),
       do: () => cliExecute("CONSUME NIGHTCAP"),
       limit: { tries: 1 },
