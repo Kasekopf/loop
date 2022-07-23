@@ -39,7 +39,15 @@ import {
   Paths,
   prepareAscension,
 } from "libram";
-import { Args, Task as BaseTask, CombatStrategy, Engine, getTasks, Quest, step } from "grimoire-kolmafia";
+import {
+  Args,
+  Task as BaseTask,
+  CombatStrategy,
+  Engine,
+  getTasks,
+  Quest,
+  step,
+} from "grimoire-kolmafia";
 
 enum Leg {
   Aftercore = 0,
@@ -282,7 +290,6 @@ const CasualQuest: Quest<Task> = {
     },
   ],
 };
-
 
 export const args = Args.create("loop", "A script for a full loop.", {
   actions: Args.number({
