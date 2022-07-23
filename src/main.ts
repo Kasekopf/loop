@@ -3,6 +3,8 @@ import {
   cliExecute,
   drink,
   fullnessLimit,
+  getWorkshed,
+  haveEffect,
   inebrietyLimit,
   myAdventures,
   myClass,
@@ -52,6 +54,7 @@ import {
   Quest,
   step,
 } from "grimoire-kolmafia";
+import { drive } from "libram/dist/resources/2017/AsdonMartin";
 
 enum Leg {
   Aftercore = 0,
@@ -299,8 +302,19 @@ const CasualQuest: Quest<Task> = {
       limit: { tries: 1 },
     },
     {
+      name: "Workshed",
+      after: ["Run"],
+      completed: () => getWorkshed() !== $item`Asdon Martin keyfob`,
+      do: () => {
+        if (haveEffect($effect`Driving Observantly`) < 900)
+          drive($effect`Driving Observantly`, 900 - haveEffect($effect`Driving Observantly`));
+        use($item`cold medicine cabinet`);
+      },
+      limit: { tries: 1 },
+    },
+    {
       name: "Garbo",
-      after: ["Ascend", "Run"],
+      after: ["Ascend", "Run", "Workshed"],
       completed: () => (myAdventures() === 0 && !canEat()) || myInebriety() > inebrietyLimit(),
       do: () => {
         if (have($item`can of Rain-Doh`) && !have($item`Rain-Doh blue balls`))
