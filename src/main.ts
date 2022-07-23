@@ -168,18 +168,21 @@ const GyouQuest: Quest<Task> = {
       ],
       completed: () => have($item`heat-resistant gloves`) && have($item`lava-proof pants`),
       do: $location`LavaCo™ Lamp Factory`,
-      combat: new CombatStrategy().macro(
-        () =>
-          new Macro().externalIf(
-            !have($effect`Everything Looks Yellow`),
-            new Macro().item($item`yellow rocket`),
-            // eslint-disable-next-line libram/verify-constants
-            new Macro().skill($skill`Double Nanovision`).repeat()
-          ),
-        [$monster`factory worker (male)`, $monster`factory worker (female)`]
-      ),
+      combat: new CombatStrategy()
+        .macro(
+          () =>
+            new Macro().externalIf(
+              !have($effect`Everything Looks Yellow`),
+              new Macro().item($item`yellow rocket`),
+              // eslint-disable-next-line libram/verify-constants
+              new Macro().skill($skill`Double Nanovision`).repeat()
+            ),
+          [$monster`factory worker (male)`, $monster`factory worker (female)`]
+        )
+        // eslint-disable-next-line libram/verify-constants
+        .macro(new Macro().skill($skill`Infinite Loop`).repeat()),
       outfit: () => {
-        if (have($effect`Everything Looks Yellow`)) return {};
+        if (!have($effect`Everything Looks Yellow`)) return {};
         else return { modifier: "item" };
       },
       limit: { soft: 10 },
@@ -310,7 +313,7 @@ export function main(command?: string): void {
   while (actions > 0) {
     const task = engine.tasks.find((t) => engine.available(t));
     if (!task) break;
-    engine.do(task);
+    engine.execute(task);
     actions--;
   }
 
