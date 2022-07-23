@@ -39,7 +39,7 @@ import {
   Paths,
   prepareAscension,
 } from "libram";
-import { Task as BaseTask, CombatStrategy, Engine, getTasks, Quest, step } from "grimoire-kolmafia";
+import { Args, Task as BaseTask, CombatStrategy, Engine, getTasks, Quest, step } from "grimoire-kolmafia";
 
 enum Leg {
   Aftercore = 0,
@@ -283,22 +283,40 @@ const CasualQuest: Quest<Task> = {
   ],
 };
 
-export function main(): void {
+
+export const args = Args.create("loop", "A script for a full loop.", {
+  actions: Args.number({
+    help: "Maximum number of actions to perform, if given. Can be used to execute just a few steps at a time.",
+  }),
+});
+export function main(command?: string): void {
+  Args.fill(args, command);
+  if (args.help) {
+    Args.showHelp(args);
+    return;
+  }
+
   const tasks = getTasks([AftercoreQuest, GyouQuest, CasualQuest]);
   const engine = new Engine<never, Task>(tasks);
 
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  let actions = args.actions ?? Infinity;
+  while (actions > 0) {
     const task = engine.tasks.find((t) => engine.available(t));
     if (!task) break;
     engine.do(task);
+    actions--;
   }
 
-  const uncompletedTasks = engine.tasks.filter((t) => !t.completed()).map((t) => t.name);
-  if (uncompletedTasks.length > 0) {
-    print("Uncompleted Tasks:");
-    for (const name of uncompletedTasks) {
-      print(name);
+  const task = engine.tasks.find((t) => engine.available(t));
+  if (args.actions !== undefined && task) {
+    print(`Next: ${task.name}`, "blue");
+  } else if (!task) {
+    const uncompletedTasks = engine.tasks.filter((t) => !t.completed()).map((t) => t.name);
+    if (uncompletedTasks.length > 0) {
+      print("Uncompleted Tasks:");
+      for (const name of uncompletedTasks) {
+        print(name);
+      }
     }
   }
 }
