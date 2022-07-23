@@ -1,8 +1,8 @@
 {
-  "name": "kol-js-starter",
-  "version": "1.0.0",
-  "description": "Example package for KoLmafia TypeScript scripts.",
-  "main": "KoLmafia/scripts/kol-js-starter/main-script-name.js",
+  "name": "loop",
+  "version": "0.1.0",
+  "description": "Full-day looping script for Kasekopf.",
+  "main": "KoLmafia/scripts/loop/loop.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "yarn run build:types && yarn run build:js",
@@ -32,13 +32,14 @@
   "dependencies": {
     "core-js": "^3.16.4",
     "kolmafia": ">=1.2.0",
-    "libram": ">=0.3.0"
+    "libram": ">=0.3.0",
+    "grimoire-kolmafia": ">=0.2.3"
   },
-  "author": "Captain Scotch",
+  "author": "Kasekopf",
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/docrostov/kol-js-starter.git"
+    "url": "git+https://github.com/Kasekopf/loop.git"
   },
   "keywords": [
     "KoLMafia",
@@ -46,7 +47,7 @@
     "TS"
   ],
   "bugs": {
-    "url": "https://github.com/docrostov/kol-js-starter/issues"
+    "url": "https://github.com/Kasekopf/loop/issues"
   },
-  "homepage": "https://github.com/docrostov/kol-js-starter#readme"
+  "homepage": "https://github.com/Kasekopf/loop#readme"
 }
