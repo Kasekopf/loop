@@ -191,12 +191,10 @@ const GyouQuest: Quest<Task> = {
             new Macro().externalIf(
               !have($effect`Everything Looks Yellow`),
               new Macro().item($item`yellow rocket`),
-              // eslint-disable-next-line libram/verify-constants
               new Macro().skill($skill`Double Nanovision`).repeat()
             ),
           [$monster`factory worker (male)`, $monster`factory worker (female)`]
         )
-        // eslint-disable-next-line libram/verify-constants
         .macro(new Macro().skill($skill`Infinite Loop`).repeat()),
       outfit: () => {
         if (!have($effect`Everything Looks Yellow`)) return {};
