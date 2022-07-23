@@ -13,10 +13,12 @@ import {
   myLevel,
   myPath,
   mySpleenUse,
+  myStorageMeat,
   myTurncount,
   print,
   runChoice,
   spleenLimit,
+  storageAmount,
   use,
   visitUrl,
 } from "kolmafia";
@@ -199,6 +201,16 @@ const GyouQuest: Quest<Task> = {
       after: ["Ascend", "Hotres", "Drill"],
       completed: () => myTurncount() >= 1000,
       do: () => cliExecute(`minevolcano ${1000 - myTurncount()}`),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Pull All",
+      after: ["Volcano Initial"],
+      completed: () => myStorageMeat() === 0 && storageAmount($item`festive warbear bank`) === 0, // arbitrary item,
+      do: () => {
+        cliExecute("pull all");
+        cliExecute("refresh all");
+      },
       limit: { tries: 1 },
     },
     {
