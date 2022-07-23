@@ -20,6 +20,7 @@ import {
   spleenLimit,
   storageAmount,
   use,
+  useSkill,
   visitUrl,
 } from "kolmafia";
 import {
@@ -40,6 +41,7 @@ import {
   Macro,
   Paths,
   prepareAscension,
+  uneffect,
 } from "libram";
 import {
   Args,
@@ -76,22 +78,30 @@ type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 type WithRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<T, K>;
 type Task = WithRequired<BaseTask, "limit">;
 
+function stooperDrunk() {
+  return (
+    myInebriety() > inebrietyLimit() ||
+    (myInebriety() === inebrietyLimit() && myFamiliar() === $familiar`Stooper`)
+  );
+}
 function garboAscend(after: string[]): Task[] {
   return [
     {
       name: "Garbo",
       after: after,
-      completed: () => (myAdventures() === 0 && !canEat()) || myInebriety() > inebrietyLimit(),
-      do: () => cliExecute("garbo ascend"),
+      completed: () => (myAdventures() === 0 && !canEat()) || stooperDrunk(),
+      do: () => {
+        if (have($item`can of Rain-Doh`) && !have($item`Rain-Doh blue balls`))
+          use($item`can of Rain-Doh`);
+        cliExecute("garbo ascend");
+      },
       limit: { tries: 1 },
     },
     {
       name: "Stooper",
       after: [...after, "Garbo"],
       do: () => cliExecute(`drink Sacramento wine`),
-      completed: () =>
-        myInebriety() > inebrietyLimit() ||
-        (myInebriety() === inebrietyLimit() && myFamiliar() === $familiar`Stooper`),
+      completed: () => stooperDrunk(),
       outfit: { equip: $items`mafia pinky ring`, familiar: $familiar`Stooper` },
       effects: $effects`Ode to Booze`,
       limit: { tries: 1 },
@@ -100,9 +110,13 @@ function garboAscend(after: string[]): Task[] {
       name: "Caldera",
       after: [...after, "Stooper"],
       acquire: [{ item: $item`heat-resistant sheet metal`, price: 5000 }],
-      do: () => $location`The Bubblin' Caldera`,
-      completed: () => $location`The Bubblin' Caldera`.turnsSpent >= 5,
+      prepare: () => useSkill($skill`Cannelloni Cocoon`),
+      do: $location`The Bubblin' Caldera`,
+      completed: () =>
+        $location`The Bubblin' Caldera`.turnsSpent >= 7 ||
+        $location`The Bubblin' Caldera`.noncombatQueue.includes("Lava Dogs"),
       combat: new CombatStrategy().macro(new Macro().attack().repeat()),
+      outfit: { modifier: "muscle", familiar: $familiar`Stooper` },
       limit: { tries: 6 }, // Clear intro adventure
     },
     {
@@ -116,6 +130,7 @@ function garboAscend(after: string[]): Task[] {
     {
       name: "Overdrunk",
       after: [...after, "Overdrink"],
+      prepare: () => uneffect($effect`Drenched in Lava`),
       completed: () => myAdventures() === 0 && myInebriety() > inebrietyLimit(),
       do: () => cliExecute("garbo"),
       limit: { tries: 1 },
@@ -223,7 +238,8 @@ const GyouQuest: Quest<Task> = {
     {
       name: "Volcano Final",
       after: ["Ascend", "Hotres", "Drill", "Tower"],
-      completed: () => myAdventures() <= 40,
+      // eslint-disable-next-line libram/verify-constants
+      completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
       do: () => cliExecute(`minevolcano ${myAdventures() - 40}`),
       limit: { tries: 1 },
     },
@@ -281,7 +297,11 @@ const CasualQuest: Quest<Task> = {
       name: "Garbo",
       after: ["Ascend"],
       completed: () => (myAdventures() === 0 && !canEat()) || myInebriety() > inebrietyLimit(),
-      do: () => cliExecute("garbo ascend"),
+      do: () => {
+        if (have($item`can of Rain-Doh`) && !have($item`Rain-Doh blue balls`))
+          use($item`can of Rain-Doh`);
+        cliExecute("garbo");
+      },
       limit: { tries: 1 },
     },
     {
