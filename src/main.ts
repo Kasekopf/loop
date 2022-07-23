@@ -303,8 +303,8 @@ const CasualQuest: Quest<Task> = {
     },
     {
       name: "Workshed",
-      after: ["Run"],
-      completed: () => getWorkshed() !== $item`Asdon Martin keyfob`,
+      after: ["Ascend", "Run"],
+      completed: () => getWorkshed() !== $item`Asdon Martin keyfob` || get("_workshedItemUsed"),
       do: () => {
         if (haveEffect($effect`Driving Observantly`) < 900)
           drive($effect`Driving Observantly`, 900 - haveEffect($effect`Driving Observantly`));
