@@ -120,7 +120,7 @@ function garboAscend(after: string[]): Task[] {
         $location`The Bubblin' Caldera`.noncombatQueue.includes("Lava Dogs"),
       combat: new CombatStrategy().macro(new Macro().attack().repeat()),
       outfit: { modifier: "muscle", familiar: $familiar`Stooper` },
-      limit: { tries: 8 }, // Clear intro adventure
+      limit: { tries: 10 }, // Clear intro adventure
     },
     {
       name: "Overdrink",
