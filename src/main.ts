@@ -6,7 +6,9 @@ import {
   getWorkshed,
   haveEffect,
   inebrietyLimit,
+  Item,
   myAdventures,
+  myAscensions,
   myClass,
   myDaycount,
   myFamiliar,
@@ -21,6 +23,7 @@ import {
   runChoice,
   spleenLimit,
   storageAmount,
+  toInt,
   use,
   useSkill,
   visitUrl,
@@ -43,6 +46,7 @@ import {
   Macro,
   Paths,
   prepareAscension,
+  set,
   uneffect,
 } from "libram";
 import {
@@ -260,7 +264,19 @@ const GyouQuest: Quest<Task> = {
       do: () => cliExecute("loopcasual goal=level"),
       limit: { tries: 1 },
     },
-    ...garboAscend(["Ascend", "Prism", "Pull All", "Level"]),
+    {
+      name: "Duplicate",
+      after: ["Ascend", "Prism", "Pull All", "Level"],
+      ready: () => have(args.duplicate),
+      completed: () => get("lastDMTDuplication") === myAscensions(),
+      prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.duplicate)}`),
+      do: $location`The Deep Machine Tunnels`,
+      choices: { 1119: 4 },
+      combat: new CombatStrategy().macro(new Macro().attack().repeat()),
+      outfit: { familiar: $familiar`Machine Elf`, modifier: "muscle" },
+      limit: { tries: 6 },
+    },
+    ...garboAscend(["Ascend", "Prism", "Pull All", "Level", "Duplicate"]),
   ],
 };
 
@@ -313,8 +329,20 @@ const CasualQuest: Quest<Task> = {
       limit: { tries: 1 },
     },
     {
+      name: "Duplicate",
+      after: ["Ascend", "Run"],
+      ready: () => have(args.duplicate),
+      completed: () => get("lastDMTDuplication") === myAscensions(),
+      prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.duplicate)}`),
+      do: $location`The Deep Machine Tunnels`,
+      choices: { 1119: 4 },
+      combat: new CombatStrategy().macro(new Macro().attack().repeat()),
+      outfit: { familiar: $familiar`Machine Elf`, modifier: "muscle" },
+      limit: { tries: 6 },
+    },
+    {
       name: "Garbo",
-      after: ["Ascend", "Run", "Workshed"],
+      after: ["Ascend", "Run", "Workshed", "Duplicate"],
       completed: () => (myAdventures() === 0 && !canEat()) || myInebriety() > inebrietyLimit(),
       do: () => {
         if (have($item`can of Rain-Doh`) && !have($item`Rain-Doh blue balls`))
@@ -350,6 +378,11 @@ export const args = Args.create("loop", "A script for a full loop.", {
   actions: Args.number({
     help: "Maximum number of actions to perform, if given. Can be used to execute just a few steps at a time.",
   }),
+  duplicate: Args.custom(
+    { help: "Item to duplicate in the Deep Machine Tunnels.", default: $item`very fancy whiskey` },
+    Item.get,
+    "ITEM"
+  ),
 });
 export function main(command?: string): void {
   Args.fill(args, command);
