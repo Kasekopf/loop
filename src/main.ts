@@ -360,25 +360,27 @@ export function main(command?: string): void {
 
   const tasks = getTasks([AftercoreQuest, GyouQuest, CasualQuest]);
   const engine = new Engine<never, Task>(tasks);
+  try {
+    engine.run(args.actions);
 
-  let actions = args.actions ?? Infinity;
-  while (actions > 0) {
-    const task = engine.tasks.find((t) => engine.available(t));
-    if (!task) break;
-    engine.execute(task);
-    actions--;
-  }
+    // Print the next task that will be executed, if it exists
+    const task = engine.getNextTask();
+    if (task) {
+      print(`Next: ${task.name}`, "blue");
+    }
 
-  const task = engine.tasks.find((t) => engine.available(t));
-  if (args.actions !== undefined && task) {
-    print(`Next: ${task.name}`, "blue");
-  } else if (!task) {
-    const uncompletedTasks = engine.tasks.filter((t) => !t.completed()).map((t) => t.name);
-    if (uncompletedTasks.length > 0) {
-      print("Uncompleted Tasks:");
-      for (const name of uncompletedTasks) {
-        print(name);
+    // If the engine ran to completion, all tasks should be complete.
+    // Print any tasks that are not complete.
+    if (args.actions === undefined) {
+      const uncompletedTasks = engine.tasks.filter((t) => !t.completed());
+      if (uncompletedTasks.length > 0) {
+        print("Uncompleted Tasks:");
+        for (const t of uncompletedTasks) {
+          print(t.name);
+        }
       }
     }
+  } finally {
+    engine.destruct();
   }
 }
