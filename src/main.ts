@@ -105,8 +105,15 @@ function garboAscend(after: string[]): Task[] {
       limit: { tries: 1 },
     },
     {
+      name: "Wish",
+      after: [],
+      completed: () => get("_genieWishesUsed") >= 3 || !have($item`genie bottle`),
+      do: () => cliExecute(`genie wish for more wishes`),
+      limit: { tries: 3 },
+    },
+    {
       name: "Stooper",
-      after: [...after, "Garbo"],
+      after: [...after, "Garbo", "Wish"],
       do: () => cliExecute(`drink Sacramento wine`),
       completed: () => stooperDrunk(),
       outfit: { equip: $items`mafia pinky ring`, familiar: $familiar`Stooper` },
@@ -352,8 +359,15 @@ const CasualQuest: Quest<Task> = {
       limit: { tries: 1 },
     },
     {
+      name: "Wish",
+      after: [],
+      completed: () => get("_genieWishesUsed") >= 3 || !have($item`genie bottle`),
+      do: () => cliExecute(`genie wish for more wishes`),
+      limit: { tries: 3 },
+    },
+    {
       name: "Nightcap",
-      after: ["Ascend", "Run", "Garbo"],
+      after: ["Ascend", "Run", "Garbo", "Wish"],
       completed: () => myInebriety() > inebrietyLimit(),
       do: () => cliExecute("CONSUME NIGHTCAP"),
       limit: { tries: 1 },
