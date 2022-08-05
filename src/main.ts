@@ -51,19 +51,48 @@ import {
 } from "libram";
 import {
   Args,
+  Quest as BaseQuest,
   Task as BaseTask,
   CombatStrategy,
   Engine,
   getTasks,
-  Quest,
+  Limit,
   step,
 } from "grimoire-kolmafia";
 import { drive } from "libram/dist/resources/2017/AsdonMartin";
+import { ProfitRecord, ProfitTracker, Records } from "./session";
 
 enum Leg {
   Aftercore = 0,
   GreyYou = 1,
   Casual = 2,
+}
+
+type Task = BaseTask & {
+  tracking?: string;
+  limit: Limit;
+};
+type Quest = BaseQuest<Task>;
+
+class ProfitTrackingEngine extends Engine<never, Task> {
+  profits: ProfitTracker;
+  constructor(tasks: Task[], key: string) {
+    super(tasks);
+    this.profits = new ProfitTracker(key);
+  }
+
+  execute(task: Task): void {
+    try {
+      super.execute(task);
+    } finally {
+      this.profits.record(`${getCurrentLeg()}@${task.tracking ?? "Misc"}`);
+    }
+  }
+
+  destruct(): void {
+    super.destruct();
+    this.profits.save();
+  }
 }
 
 function getCurrentLeg(): number {
@@ -81,17 +110,13 @@ function canEat(): boolean {
   );
 }
 
-type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
-type WithRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<T, K>;
-type Task = WithRequired<BaseTask, "limit">;
-
 function stooperDrunk() {
   return (
     myInebriety() > inebrietyLimit() ||
     (myInebriety() === inebrietyLimit() && myFamiliar() === $familiar`Stooper`)
   );
 }
-function garboAscend(after: string[]): Task[] {
+function garboAscend(after: string[], garbo: string): Task[] {
   return [
     {
       name: "Garbo",
@@ -100,9 +125,10 @@ function garboAscend(after: string[]): Task[] {
       do: () => {
         if (have($item`can of Rain-Doh`) && !have($item`Rain-Doh blue balls`))
           use($item`can of Rain-Doh`);
-        cliExecute("garbo ascend");
+        cliExecute(garbo);
       },
       limit: { tries: 1 },
+      tracking: "Garbo",
     },
     {
       name: "Wish",
@@ -152,13 +178,13 @@ function garboAscend(after: string[]): Task[] {
   ];
 }
 
-const AftercoreQuest: Quest<Task> = {
+const AftercoreQuest: Quest = {
   name: "Aftercore",
   completed: () => getCurrentLeg() > Leg.Aftercore,
-  tasks: [...garboAscend([])],
+  tasks: [...garboAscend([], "garbo yachtzeechain ascend")],
 };
 
-const GyouQuest: Quest<Task> = {
+const GyouQuest: Quest = {
   name: "Grey You",
   completed: () => getCurrentLeg() > Leg.GreyYou,
   tasks: [
@@ -190,6 +216,7 @@ const GyouQuest: Quest<Task> = {
       completed: () => step("questL13Final") !== -1,
       do: () => cliExecute("loopgyou delaytower pulls=19"),
       limit: { tries: 1 },
+      tracking: "Run",
     },
     {
       name: "Hotres",
@@ -215,6 +242,7 @@ const GyouQuest: Quest<Task> = {
         else return { modifier: "item" };
       },
       limit: { soft: 10 },
+      tracking: "Goo Farming",
     },
     {
       name: "Drill",
@@ -222,6 +250,7 @@ const GyouQuest: Quest<Task> = {
       completed: () => have($item`high-temperature mining drill`),
       do: () => cliExecute("pull high-temperature mining drill"),
       limit: { tries: 1 },
+      tracking: "Goo Farming",
     },
     {
       name: "Volcano Initial",
@@ -229,6 +258,7 @@ const GyouQuest: Quest<Task> = {
       completed: () => myTurncount() >= 1000,
       do: () => cliExecute(`minevolcano ${1000 - myTurncount()}`),
       limit: { tries: 2 },
+      tracking: "Goo Farming",
     },
     {
       name: "Pull All",
@@ -239,6 +269,7 @@ const GyouQuest: Quest<Task> = {
         cliExecute("refresh all");
       },
       limit: { tries: 1 },
+      tracking: "Goo Farming",
     },
     {
       name: "Tower",
@@ -246,6 +277,7 @@ const GyouQuest: Quest<Task> = {
       completed: () => step("questL13Final") > 11,
       do: () => cliExecute("loopgyou delaytower"),
       limit: { tries: 1 },
+      tracking: "Run",
     },
     {
       name: "Volcano Final",
@@ -254,6 +286,7 @@ const GyouQuest: Quest<Task> = {
       completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
       do: () => cliExecute(`minevolcano ${myAdventures() - 40}`),
       limit: { tries: 2 },
+      tracking: "Goo Farming",
     },
     {
       name: "Prism",
@@ -283,11 +316,14 @@ const GyouQuest: Quest<Task> = {
       outfit: { familiar: $familiar`Machine Elf`, modifier: "muscle" },
       limit: { tries: 6 },
     },
-    ...garboAscend(["Ascend", "Prism", "Pull All", "Level", "Duplicate"]),
+    ...garboAscend(
+      ["Ascend", "Prism", "Pull All", "Level", "Duplicate"],
+      "garbo yachtzeechain ascend"
+    ),
   ],
 };
 
-const CasualQuest: Quest<Task> = {
+const CasualQuest: Quest = {
   name: "Casual",
   tasks: [
     {
@@ -323,6 +359,7 @@ const CasualQuest: Quest<Task> = {
       completed: () => step("questL13Final") > 11,
       do: () => cliExecute("loopcasual"),
       limit: { tries: 1 },
+      tracking: "Run",
     },
     {
       name: "Workshed",
@@ -357,6 +394,7 @@ const CasualQuest: Quest<Task> = {
         cliExecute("garbo");
       },
       limit: { tries: 1 },
+      tracking: "Garbo",
     },
     {
       name: "Wish",
@@ -406,7 +444,7 @@ export function main(command?: string): void {
   }
 
   const tasks = getTasks([AftercoreQuest, GyouQuest, CasualQuest]);
-  const engine = new Engine<never, Task>(tasks);
+  const engine = new ProfitTrackingEngine(tasks, "loop_profit_tracker");
   try {
     engine.run(args.actions);
 
@@ -430,4 +468,44 @@ export function main(command?: string): void {
   } finally {
     engine.destruct();
   }
+
+  printProfits(engine.profits.all());
+}
+
+function sum(...records: ProfitRecord[]): ProfitRecord {
+  return {
+    meat: records.reduce((v, p) => v + p.meat, 0),
+    items: records.reduce((v, p) => v + p.items, 0),
+    turns: records.reduce((v, p) => v + p.turns, 0),
+    hours: records.reduce((v, p) => v + p.hours, 0),
+  };
+}
+function printProfitSegment(key: string, record: ProfitRecord, color: string) {
+  if (record === undefined) return;
+  print(
+    `${key}: ${record.meat} meat + ${record.items} items (${record.turns} turns + ${record.hours} hours)`,
+    color
+  );
+}
+function printProfits(records: Records) {
+  printProfitSegment("Aftercore Garbo", records["0@Garbo"], "green");
+  printProfitSegment("Aftercore Other", records["0@Misc"], "green");
+  printProfitSegment("-- Aftercore --", sum(records["0@Garbo"], records["0@Misc"]), "blue");
+  printProfitSegment("Gyou Run", records["1@Run"], "green");
+  printProfitSegment("Gyou GooFarming", records["1@Goo Farming"], "green");
+  printProfitSegment("Gyou Garbo", records["1@Garbo"], "green");
+  printProfitSegment("Gyou Other", records["1@Misc"], "green");
+  printProfitSegment(
+    "-- Gyou --",
+    sum(records["1@Run"], records["1@Goo Farming"], records["1@Garbo"], records["1@Misc"]),
+    "blue"
+  );
+  printProfitSegment("Casual Run", records["2@Run"], "green");
+  printProfitSegment("Casual Garbo", records["2@Garbo"], "green");
+  printProfitSegment("Casual Other", records["2@Misc"], "green");
+  printProfitSegment(
+    "-- Casual --",
+    sum(records["2@Run"], records["2@Garbo"], records["2@Misc"]),
+    "blue"
+  );
 }
