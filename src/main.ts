@@ -472,40 +472,64 @@ export function main(command?: string): void {
   printProfits(engine.profits.all());
 }
 
-function sum(...records: ProfitRecord[]): ProfitRecord {
+function sum(record: Records, where: (key: string) => boolean): ProfitRecord {
+  const included: ProfitRecord[] = [];
+  for (const key in record) {
+    if (where(key)) included.push(record[key]);
+  }
   return {
-    meat: records.reduce((v, p) => v + p.meat, 0),
-    items: records.reduce((v, p) => v + p.items, 0),
-    turns: records.reduce((v, p) => v + p.turns, 0),
-    hours: records.reduce((v, p) => v + p.hours, 0),
+    meat: included.reduce((v, p) => v + p.meat, 0),
+    items: included.reduce((v, p) => v + p.items, 0),
+    turns: included.reduce((v, p) => v + p.turns, 0),
+    hours: included.reduce((v, p) => v + p.hours, 0),
   };
 }
+
+function numberWithCommas(x: number): string {
+  const str = x.toString();
+  if (str.includes(".")) return x.toFixed(2);
+  return str.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function printProfitSegment(key: string, record: ProfitRecord, color: string) {
   if (record === undefined) return;
   print(
-    `${key}: ${record.meat} meat + ${record.items} items (${record.turns} turns + ${record.hours} hours)`,
+    `${key}: ${numberWithCommas(record.meat)} meat + ${numberWithCommas(
+      record.items
+    )} items (${numberWithCommas(record.turns)} turns + ${numberWithCommas(record.hours)} hours)`,
     color
   );
 }
+
 function printProfits(records: Records) {
-  printProfitSegment("Aftercore Garbo", records["0@Garbo"], "green");
-  printProfitSegment("Aftercore Other", records["0@Misc"], "green");
-  printProfitSegment("-- Aftercore --", sum(records["0@Garbo"], records["0@Misc"]), "blue");
-  printProfitSegment("Gyou Run", records["1@Run"], "green");
-  printProfitSegment("Gyou GooFarming", records["1@Goo Farming"], "green");
-  printProfitSegment("Gyou Garbo", records["1@Garbo"], "green");
-  printProfitSegment("Gyou Other", records["1@Misc"], "green");
+  print("");
   printProfitSegment(
-    "-- Gyou --",
-    sum(records["1@Run"], records["1@Goo Farming"], records["1@Garbo"], records["1@Misc"]),
+    "Aftercore",
+    sum(records, (key) => key.startsWith("0")),
     "blue"
   );
-  printProfitSegment("Casual Run", records["2@Run"], "green");
-  printProfitSegment("Casual Garbo", records["2@Garbo"], "green");
-  printProfitSegment("Casual Other", records["2@Misc"], "green");
+  printProfitSegment("* Garbo", records["0@Garbo"], "green");
+  printProfitSegment("* Other", records["0@Misc"], "green");
   printProfitSegment(
-    "-- Casual --",
-    sum(records["2@Run"], records["2@Garbo"], records["2@Misc"]),
+    "Grey You",
+    sum(records, (key) => key.startsWith("1")),
     "blue"
+  );
+  printProfitSegment("* Run", records["1@Run"], "green");
+  printProfitSegment("* GooFarming", records["1@Goo Farming"], "green");
+  printProfitSegment("* Garbo", records["1@Garbo"], "green");
+  printProfitSegment("* Other", records["1@Misc"], "green");
+  printProfitSegment(
+    "Casual",
+    sum(records, (key) => key.startsWith("2")),
+    "blue"
+  );
+  printProfitSegment("* Run", records["2@Run"], "green");
+  printProfitSegment("* Garbo", records["2@Garbo"], "green");
+  printProfitSegment("* Other", records["2@Misc"], "green");
+  printProfitSegment(
+    "Total",
+    sum(records, () => true),
+    "black"
   );
 }
