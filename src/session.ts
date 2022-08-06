@@ -193,6 +193,7 @@ export class ProfitTracker {
   session: Session;
   turns: number;
   hours: number;
+  pulled: Set<Item>;
   ascensions: number;
 
   constructor(key: string) {
@@ -203,6 +204,13 @@ export class ProfitTracker {
     this.turns = myTurncount();
     this.hours = gametimeToInt() / (1000 * 60 * 60);
     this.ascensions = myAscensions();
+    this.pulled = new Set<Item>(
+      get("_roninStoragePulls")
+        .split(",")
+        .map((id) => parseInt(id))
+        .filter((id) => id > 0)
+        .map((id) => Item.get(id))
+    );
   }
 
   reset(): void {
@@ -210,6 +218,13 @@ export class ProfitTracker {
     this.turns = myTurncount();
     this.hours = gametimeToInt() / (1000 * 60 * 60);
     this.ascensions = myAscensions();
+    this.pulled = new Set<Item>(
+      get("_roninStoragePulls")
+        .split(",")
+        .map((id) => parseInt(id))
+        .filter((id) => id > 0)
+        .map((id) => Item.get(id))
+    );
   }
 
   record(tag: string): void {
@@ -218,8 +233,22 @@ export class ProfitTracker {
       this.reset();
       return;
     }
-    const diff = Session.current().diff(this.session);
 
+    // Pulled items are tracked oddly in the Session
+    // (they are included in the Session diff by default)
+    const newPulls = new Set<Item>(
+      get("_roninStoragePulls")
+        .split(",")
+        .map((id) => parseInt(id))
+        .filter((id) => id > 0)
+        .map((id) => Item.get(id))
+    );
+    for (const item of newPulls) {
+      if (this.pulled.has(item)) continue;
+      this.session.items.set(item, 1 + (this.session.items.get(item) ?? 0));
+    }
+
+    const diff = Session.current().diff(this.session);
     if (!(tag in this.records)) this.records[tag] = { meat: 0, items: 0, turns: 0, hours: 0 };
 
     const value = diff.value(garboValue);
