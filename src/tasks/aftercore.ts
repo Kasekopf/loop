@@ -109,5 +109,14 @@ export function garboAscend(after: string[], garbo: string): Task[] {
 export const AftercoreQuest: Quest = {
   name: "Aftercore",
   completed: () => getCurrentLeg() > Leg.Aftercore,
-  tasks: [...garboAscend([], "garbo yachtzeechain ascend")],
+  tasks: [
+    {
+      name: "Breakfast",
+      after: [],
+      completed: () => get("breakfastCompleted"),
+      do: () => cliExecute("breakfast"),
+      limit: { tries: 1 },
+    },
+    ...garboAscend(["Breakfast"], "garbo yachtzeechain ascend"),
+  ],
 };

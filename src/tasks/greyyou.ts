@@ -165,8 +165,15 @@ export const GyouQuest: Quest = {
       outfit: { familiar: $familiar`Machine Elf`, modifier: "muscle" },
       limit: { tries: 6 },
     },
+    {
+      name: "Breakfast",
+      after: ["Ascend", "Prism", "Pull All", "Level"],
+      completed: () => get("breakfastCompleted"),
+      do: () => cliExecute("breakfast"),
+      limit: { tries: 1 },
+    },
     ...garboAscend(
-      ["Ascend", "Prism", "Pull All", "Level", "Duplicate"],
+      ["Ascend", "Prism", "Pull All", "Level", "Duplicate", "Breakfast"],
       "garbo yachtzeechain ascend"
     ),
   ],

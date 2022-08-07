@@ -94,8 +94,15 @@ export const CasualQuest: Quest = {
       limit: { tries: 6 },
     },
     {
+      name: "Breakfast",
+      after: ["Ascend", "Run"],
+      completed: () => get("breakfastCompleted"),
+      do: () => cliExecute("breakfast"),
+      limit: { tries: 1 },
+    },
+    {
       name: "Garbo",
-      after: ["Ascend", "Run", "Workshed", "Duplicate"],
+      after: ["Ascend", "Run", "Workshed", "Duplicate", "Breakfast"],
       completed: () => (myAdventures() === 0 && !canEat()) || myInebriety() > inebrietyLimit(),
       do: (): void => {
         if (have($item`can of Rain-Doh`) && !have($item`Rain-Doh blue balls`))
