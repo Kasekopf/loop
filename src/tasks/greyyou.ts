@@ -91,7 +91,7 @@ export const GyouQuest: Quest = {
         else return { modifier: "item" };
       },
       limit: { soft: 10 },
-      tracking: "Goo Farming",
+      tracking: "GooFarming",
     },
     {
       name: "Drill",
@@ -99,7 +99,7 @@ export const GyouQuest: Quest = {
       completed: () => have($item`high-temperature mining drill`),
       do: () => cliExecute("pull high-temperature mining drill"),
       limit: { tries: 1 },
-      tracking: "Goo Farming",
+      tracking: "GooFarming",
     },
     {
       name: "Volcano Initial",
@@ -107,7 +107,7 @@ export const GyouQuest: Quest = {
       completed: () => myTurncount() >= 1000,
       do: () => cliExecute(`minevolcano ${1000 - myTurncount()}`),
       limit: { tries: 2 },
-      tracking: "Goo Farming",
+      tracking: "GooFarming",
     },
     {
       name: "Pull All",
@@ -118,7 +118,7 @@ export const GyouQuest: Quest = {
         cliExecute("refresh all");
       },
       limit: { tries: 1 },
-      tracking: "Goo Farming",
+      tracking: "GooFarming",
     },
     {
       name: "Tower",
@@ -135,7 +135,7 @@ export const GyouQuest: Quest = {
       completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
       do: () => cliExecute(`minevolcano ${myAdventures() - 40}`),
       limit: { tries: 2 },
-      tracking: "Goo Farming",
+      tracking: "GooFarming",
     },
     {
       name: "Prism",

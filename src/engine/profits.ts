@@ -272,3 +272,66 @@ export class ProfitTracker {
     this.setting.set(this.records);
   }
 }
+
+function sum(record: Records, where: (key: string) => boolean): ProfitRecord {
+  const included: ProfitRecord[] = [];
+  for (const key in record) {
+    if (where(key)) included.push(record[key]);
+  }
+  return {
+    meat: included.reduce((v, p) => v + p.meat, 0),
+    items: included.reduce((v, p) => v + p.items, 0),
+    turns: included.reduce((v, p) => v + p.turns, 0),
+    hours: included.reduce((v, p) => v + p.hours, 0),
+  };
+}
+
+function numberWithCommas(x: number): string {
+  const str = x.toString();
+  if (str.includes(".")) return x.toFixed(2);
+  return str.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function printProfitSegment(key: string, record: ProfitRecord, color: string) {
+  if (record === undefined) return;
+  print(
+    `${key}: ${numberWithCommas(record.meat)} meat + ${numberWithCommas(record.items)} items (${
+      record.turns
+    } turns + ${numberWithCommas(record.hours)} hours)`,
+    color
+  );
+}
+
+export function printProfits(records: Records): void {
+  print("");
+  print("== Daily Loop Profit ==");
+  printProfitSegment(
+    "Aftercore",
+    sum(records, (key) => key.startsWith("0")),
+    "blue"
+  );
+  printProfitSegment("* Garbo", records["0@Garbo"], "green");
+  printProfitSegment("* Other", records["0@Other"], "green");
+  printProfitSegment(
+    "Grey You",
+    sum(records, (key) => key.startsWith("1")),
+    "blue"
+  );
+  printProfitSegment("* Run", records["1@Run"], "green");
+  printProfitSegment("* GooFarming", records["1@GooFarming"], "green");
+  printProfitSegment("* Garbo", records["1@Garbo"], "green");
+  printProfitSegment("* Other", records["1@Other"], "green");
+  printProfitSegment(
+    "Casual",
+    sum(records, (key) => key.startsWith("2")),
+    "blue"
+  );
+  printProfitSegment("* Run", records["2@Run"], "green");
+  printProfitSegment("* Garbo", records["2@Garbo"], "green");
+  printProfitSegment("* Other", records["2@Other"], "green");
+  printProfitSegment(
+    "Total",
+    sum(records, () => true),
+    "black"
+  );
+}

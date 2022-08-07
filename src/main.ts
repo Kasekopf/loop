@@ -4,7 +4,7 @@ import { Args, getTasks } from "grimoire-kolmafia";
 import { AftercoreQuest } from "./tasks/aftercore";
 import { GyouQuest } from "./tasks/greyyou";
 import { CasualQuest } from "./tasks/casual";
-import { printProfits, ProfitTrackingEngine } from "./engine/engine";
+import { ProfitTrackingEngine } from "./engine/engine";
 
 export const args = Args.create("loop", "A script for a full loop.", {
   actions: Args.number({
@@ -48,6 +48,4 @@ export function main(command?: string): void {
   } finally {
     engine.destruct();
   }
-
-  printProfits(engine.profits.all());
 }
