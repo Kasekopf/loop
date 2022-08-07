@@ -28,7 +28,7 @@ import {
 } from "libram";
 import { getCurrentLeg, Leg, Quest, Task } from "./structure";
 
-function canEat(): boolean {
+export function canEat(): boolean {
   return (
     myFullness() < fullnessLimit() ||
     mySpleenUse() < spleenLimit() ||

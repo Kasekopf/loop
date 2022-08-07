@@ -1,7 +1,6 @@
 import { CombatStrategy, step } from "grimoire-kolmafia";
 import {
   buy,
-  canEat,
   cliExecute,
   getWorkshed,
   haveEffect,
@@ -31,6 +30,7 @@ import {
 import { drive } from "libram/dist/resources/2017/AsdonMartin";
 import { getCurrentLeg, Leg, Quest } from "./structure";
 import { args } from "../main";
+import { canEat } from "./aftercore";
 
 export const CasualQuest: Quest = {
   name: "Casual",
