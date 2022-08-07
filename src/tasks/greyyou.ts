@@ -152,6 +152,7 @@ export const GyouQuest: Quest = {
       },
       combat: new CombatStrategy().macro(
         new Macro()
+          .trySkill($skill`Bowl Straight Up`)
           .skill($skill`Extract Jelly`)
           .skill($skill`Sing Along`)
           .skill($skill`Precision Shot`)
@@ -188,7 +189,7 @@ export const GyouQuest: Quest = {
       do: $location`Barf Mountain`,
       outfit: {
         modifier: "meat",
-        back: $item`haiku katana`,
+        weapon: $item`haiku katana`,
         acc1: $item`lucky gold ring`,
         acc2: $item`mafia pointer finger ring`,
         familiar: $familiar`Space Jellyfish`,
@@ -196,6 +197,7 @@ export const GyouQuest: Quest = {
       effects: $effects`How to Scam Tourists`,
       combat: new CombatStrategy().macro(
         new Macro()
+          .trySkill($skill`Bowl Straight Up`)
           .skill($skill`Extract Jelly`)
           .skill($skill`Sing Along`)
           .skill($skill`Summer Siesta`)
