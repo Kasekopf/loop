@@ -34,6 +34,7 @@ import {
   Paths,
   prepareAscension,
   set,
+  SourceTerminal,
 } from "libram";
 import { getCurrentLeg, Leg, Quest, Task } from "./structure";
 import { args } from "../main";
@@ -135,6 +136,9 @@ export const GyouQuest: Quest = {
         if (get("tomeSummons") < 3) useSkill($skill`Summon Smithsness`);
         if (have($item`Flaskfull of Hollow`)) ensureEffect($effect`Merry Smithsness`);
         if (have($item`How to Avoid Scams`)) ensureEffect($effect`How to Scam Tourists`);
+
+        // Use only the first source terminal enhance, save the others for aftercore
+        if (get("_sourceTerminalEnhanceUses") === 0) SourceTerminal.enhance($effect`meat.enh`);
       },
       outfit: {
         back: $item`unwrapped knock-off retro superhero cape`,
