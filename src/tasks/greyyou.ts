@@ -1,6 +1,9 @@
 import { CombatStrategy, step } from "grimoire-kolmafia";
 import {
+  autosell,
+  buyUsingStorage,
   cliExecute,
+  itemAmount,
   knollAvailable,
   myAdventures,
   myAscensions,
@@ -8,6 +11,7 @@ import {
   myLevel,
   myStorageMeat,
   myTurncount,
+  restoreMp,
   retrieveItem,
   runChoice,
   storageAmount,
@@ -50,7 +54,10 @@ const gear: Task[] = [
       if (step("questM05Toot") === 0) visitUrl("tutorial.php?action=toot");
       if (have($item`letter from King Ralph XI`)) use($item`letter from King Ralph XI`);
       if (have($item`pork elf goodies sack`)) use($item`pork elf goodies sack`);
-      if (!have($item`porquoise`)) cliExecute("pull 1 porquoise");
+      if (!have($item`porquoise`)) {
+        if (storageAmount($item`porquoise`) === 0) buyUsingStorage($item`porquoise`);
+        cliExecute("pull 1 porquoise");
+      }
       Pantogram.makePants(
         "Muscle",
         "Stench Resistance: 2",
@@ -58,6 +65,9 @@ const gear: Task[] = [
         "Combat Rate: 5",
         "Meat Drop: 60"
       );
+      autosell($item`hamethyst`, itemAmount($item`hamethyst`));
+      autosell($item`baconstone`, itemAmount($item`baconstone`));
+      autosell($item`porquoise`, itemAmount($item`porquoise`));
     },
     limit: { tries: 1 },
   },
@@ -107,7 +117,7 @@ export const GyouQuest: Quest = {
           Lifestyle.softcore,
           "vole",
           $item`astral six-pack`,
-          $item`astral mask`
+          $item`astral pistol`
         );
         if (visitUrl("main.php").includes("somewhat-human-shaped mass of grey goo nanites"))
           runChoice(-1);
@@ -175,7 +185,7 @@ export const GyouQuest: Quest = {
     },
     {
       name: "Tower",
-      after: ["Ascend", "Pull All", "Volcano Initial"],
+      after: ["Ascend", "Pull All", "In-Run Farm Initial"],
       completed: () => step("questL13Final") > 11,
       do: () => cliExecute("loopgyou delaytower"),
       limit: { tries: 1 },
@@ -186,6 +196,7 @@ export const GyouQuest: Quest = {
       after: ["Ascend", "Tower", ...gear.map((task) => task.name)],
       // eslint-disable-next-line libram/verify-constants
       completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
+      prepare: () => restoreMp(10),
       do: $location`Barf Mountain`,
       outfit: {
         modifier: "meat",
