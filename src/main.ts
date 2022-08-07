@@ -15,6 +15,9 @@ export const args = Args.create("loop", "A script for a full loop.", {
     Item.get,
     "ITEM"
   ),
+  abort: Args.string({
+    help: "If given, abort during the prepare() step for the task with matching name.",
+  }),
 });
 export function main(command?: string): void {
   Args.fill(args, command);
@@ -24,6 +27,16 @@ export function main(command?: string): void {
   }
 
   const tasks = getTasks([AftercoreQuest, GyouQuest, CasualQuest]);
+
+  // Abort during the prepare() step of the specified task
+  if (args.abort) {
+    const to_abort = tasks.find((task) => task.name === args.abort);
+    if (!to_abort) throw `Unable to identify task ${args.abort}`;
+    to_abort.prepare = (): void => {
+      throw `Abort requested`;
+    };
+  }
+
   const engine = new ProfitTrackingEngine(tasks, "loop_profit_tracker");
   try {
     engine.run(args.actions);
