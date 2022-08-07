@@ -1,37 +1,91 @@
-import { CombatStrategy, OutfitSpec, step } from "grimoire-kolmafia";
+import { CombatStrategy, step } from "grimoire-kolmafia";
 import {
   cliExecute,
+  knollAvailable,
   myAdventures,
   myAscensions,
   myClass,
   myLevel,
   myStorageMeat,
   myTurncount,
+  retrieveItem,
   runChoice,
   storageAmount,
   toInt,
+  use,
+  useSkill,
   visitUrl,
 } from "kolmafia";
 import {
   $class,
   $effect,
+  $effects,
   $familiar,
   $item,
   $location,
-  $monster,
   $skill,
   ascend,
+  ensureEffect,
   get,
   have,
   Lifestyle,
   Macro,
+  Pantogram,
   Paths,
   prepareAscension,
   set,
 } from "libram";
-import { getCurrentLeg, Leg, Quest } from "./structure";
+import { getCurrentLeg, Leg, Quest, Task } from "./structure";
 import { args } from "../main";
 import { garboAscend } from "./aftercore";
+
+const gear: Task[] = [
+  {
+    name: "Pants",
+    after: [],
+    completed: () => have($item`pantogram pants`),
+    do: () => {
+      if (step("questM05Toot") === -1) visitUrl("council.php");
+      if (step("questM05Toot") === 0) visitUrl("tutorial.php?action=toot");
+      if (have($item`letter from King Ralph XI`)) use($item`letter from King Ralph XI`);
+      if (have($item`pork elf goodies sack`)) use($item`pork elf goodies sack`);
+      if (!have($item`porquoise`)) cliExecute("pull 1 porquoise");
+      Pantogram.makePants(
+        "Muscle",
+        "Stench Resistance: 2",
+        "Maximum MP: 20",
+        "Combat Rate: 5",
+        "Meat Drop: 60"
+      );
+    },
+    limit: { tries: 1 },
+  },
+  {
+    name: "Lucky Gold Ring",
+    after: [],
+    completed: () => have($item`lucky gold ring`),
+    do: () => cliExecute("pull lucky gold ring"),
+    limit: { tries: 1 },
+  },
+  {
+    name: "Pointer Finger",
+    after: [],
+    completed: () => have($item`mafia pointer finger ring`),
+    do: () => cliExecute("pull mafia pointer finger ring"),
+    limit: { tries: 1 },
+  },
+  {
+    name: "Offhand",
+    after: [],
+    completed: () => have($item`Half a Purse`),
+    ready: () => knollAvailable(),
+    do: () => {
+      if (!have($item`lump of Brituminous coal`)) useSkill($skill`Summon Smithsness`);
+      retrieveItem($item`Half a Purse`);
+    },
+    limit: { tries: 1 },
+  },
+];
 
 export const GyouQuest: Quest = {
   name: "Grey You",
@@ -59,66 +113,60 @@ export const GyouQuest: Quest = {
       },
       limit: { tries: 1 },
     },
+    ...gear,
     {
       name: "Run",
-      after: ["Ascend"],
+      after: ["Ascend", ...gear.map((task) => task.name)],
       completed: () => step("questL13Final") !== -1,
       do: () => cliExecute("loopgyou delaytower pulls=19"),
       limit: { tries: 1 },
       tracking: "Run",
     },
     {
-      name: "Hotres",
-      after: ["Ascend", "Run"],
-      acquire: [
-        { item: $item`yellow rocket`, useful: () => !have($effect`Everything Looks Yellow`) },
-      ],
-      completed: () => have($item`heat-resistant gloves`) && have($item`lava-proof pants`),
-      do: $location`LavaCo™ Lamp Factory`,
-      combat: new CombatStrategy()
-        .macro(
-          () =>
-            new Macro().externalIf(
-              !have($effect`Everything Looks Yellow`),
-              new Macro().item($item`yellow rocket`),
-              new Macro().skill($skill`Double Nanovision`).repeat()
-            ),
-          [$monster`factory worker (male)`, $monster`factory worker (female)`]
-        )
-        .macro(new Macro().skill($skill`Infinite Loop`).repeat()),
-      outfit: (): OutfitSpec => {
-        if (!have($effect`Everything Looks Yellow`)) return {};
-        else return { modifier: "item" };
-      },
-      limit: { soft: 10 },
-      tracking: "GooFarming",
-    },
-    {
-      name: "Drill",
-      after: ["Ascend", "Run"],
-      completed: () => have($item`high-temperature mining drill`),
-      do: () => cliExecute("pull high-temperature mining drill"),
-      limit: { tries: 1 },
-      tracking: "GooFarming",
-    },
-    {
-      name: "Volcano Initial",
-      after: ["Ascend", "Hotres", "Drill"],
+      name: "In-Run Farm Initial",
+      after: ["Ascend", "Run", ...gear.map((task) => task.name)],
       completed: () => myTurncount() >= 1000,
-      do: () => cliExecute(`minevolcano ${1000 - myTurncount()}`),
-      limit: { tries: 2 },
+      do: $location`Barf Mountain`,
+      acquire: [{ item: $item`wad of used tape` }],
+      prepare: (): void => {
+        if (get("retroCapeSuperhero") !== "robot" || get("retroCapeWashingInstructions") !== "kill")
+          cliExecute("retrocape robot kill");
+
+        if (get("tomeSummons") < 3) useSkill($skill`Summon Smithsness`);
+        if (have($item`Flaskfull of Hollow`)) ensureEffect($effect`Merry Smithsness`);
+        if (have($item`How to Avoid Scams`)) ensureEffect($effect`How to Scam Tourists`);
+      },
+      outfit: {
+        back: $item`unwrapped knock-off retro superhero cape`,
+        weapon: $item`astral pistol`,
+        offhand: $item`Half a Purse`,
+        acc1: $item`lucky gold ring`,
+        acc2: $item`mafia pointer finger ring`,
+        acc3: $item`mafia thumb ring`,
+        familiar: $familiar`Space Jellyfish`,
+        modifier: "meat",
+      },
+      combat: new CombatStrategy().macro(
+        new Macro()
+          .skill($skill`Extract Jelly`)
+          .skill($skill`Sing Along`)
+          .skill($skill`Precision Shot`)
+          .skill($skill`Double Nanovision`)
+          .repeat()
+      ),
+      limit: { tries: 450 },
       tracking: "GooFarming",
     },
     {
       name: "Pull All",
-      after: ["Ascend", "Volcano Initial"],
+      after: ["Ascend", "In-Run Farm Initial"],
       completed: () => myStorageMeat() === 0 && storageAmount($item`festive warbear bank`) === 0, // arbitrary item,
       do: (): void => {
         cliExecute("pull all");
         cliExecute("refresh all");
       },
       limit: { tries: 1 },
-      tracking: "GooFarming",
+      tracking: "Run",
     },
     {
       name: "Tower",
@@ -129,17 +177,33 @@ export const GyouQuest: Quest = {
       tracking: "Run",
     },
     {
-      name: "Volcano Final",
-      after: ["Ascend", "Hotres", "Drill", "Tower"],
+      name: "In-Run Farm Final",
+      after: ["Ascend", "Tower", ...gear.map((task) => task.name)],
       // eslint-disable-next-line libram/verify-constants
       completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
-      do: () => cliExecute(`minevolcano ${myAdventures() - 40}`),
-      limit: { tries: 2 },
+      do: $location`Barf Mountain`,
+      outfit: {
+        modifier: "meat",
+        back: $item`haiku katana`,
+        acc1: $item`lucky gold ring`,
+        acc2: $item`mafia pointer finger ring`,
+        familiar: $familiar`Space Jellyfish`,
+      },
+      effects: $effects`How to Scam Tourists`,
+      combat: new CombatStrategy().macro(
+        new Macro()
+          .skill($skill`Extract Jelly`)
+          .skill($skill`Sing Along`)
+          .skill($skill`Summer Siesta`)
+          .skill($skill`Double Nanovision`)
+          .repeat()
+      ),
+      limit: { tries: 150 },
       tracking: "GooFarming",
     },
     {
       name: "Prism",
-      after: ["Ascend", "Volcano Final"],
+      after: ["Ascend", "In-Run Farm Final"],
       // eslint-disable-next-line libram/verify-constants
       completed: () => myClass() !== $class`Grey Goo`,
       do: () => cliExecute("loopgyou class=1"),
