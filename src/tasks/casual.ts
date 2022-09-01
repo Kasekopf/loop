@@ -18,6 +18,7 @@ import {
   $item,
   $location,
   ascend,
+  ChateauMantegna,
   get,
   have,
   haveInCampground,
@@ -127,9 +128,18 @@ export const CasualQuest: Quest = {
       limit: { tries: 1 },
     },
     {
+      name: "Chateau Sleep",
+      after: ["Ascend", "Nightcap"],
+      completed: () =>
+        !ChateauMantegna.have() || ChateauMantegna.getCeiling() === "artificial skylight",
+      do: () => ChateauMantegna.changeCeiling("artificial skylight"),
+      limit: { tries: 1 },
+    },
+    {
       name: "Sleep",
       completed: () => haveInCampground($item`clockwork maid`),
       after: ["Ascend", "Nightcap"],
+      acquire: [{ item: $item`burning cape`, price: 6500, optional: true }],
       do: (): void => {
         if (!haveInCampground($item`clockwork maid`)) {
           if (!have($item`clockwork maid`)) buy(1, $item`clockwork maid`, 48000);
