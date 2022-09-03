@@ -139,7 +139,10 @@ export const CasualQuest: Quest = {
       name: "Sleep",
       completed: () => haveInCampground($item`clockwork maid`),
       after: ["Ascend", "Nightcap"],
-      acquire: [{ item: $item`burning cape`, price: 6500, optional: true }],
+      acquire: [
+        { item: $item`burning newspaper`, price: 6500, optional: true },
+        { item: $item`burning cape`, price: 6500, optional: true },
+      ],
       do: (): void => {
         if (!haveInCampground($item`clockwork maid`)) {
           if (!have($item`clockwork maid`)) buy(1, $item`clockwork maid`, 48000);
