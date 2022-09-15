@@ -31,12 +31,14 @@ import {
   ascend,
   ensureEffect,
   get,
+  getKramcoWandererChance,
   have,
   Lifestyle,
   Macro,
   Pantogram,
   Paths,
   prepareAscension,
+  RetroCape,
   set,
   SourceTerminal,
 } from "libram";
@@ -147,21 +149,27 @@ export const GyouQuest: Quest = {
       do: $location`Barf Mountain`,
       acquire: [{ item: $item`wad of used tape` }],
       prepare: (): void => {
-        if (get("retroCapeSuperhero") !== "robot" || get("retroCapeWashingInstructions") !== "kill")
-          cliExecute("retrocape robot kill");
+        RetroCape.tuneToSkill($skill`Precision Shot`);
 
-        if (get("tomeSummons") < 3) useSkill($skill`Summon Smithsness`);
-        if (have($item`Flaskfull of Hollow`)) ensureEffect($effect`Merry Smithsness`);
         if (have($item`How to Avoid Scams`)) ensureEffect($effect`How to Scam Tourists`);
 
         // Use only the first source terminal enhance, save the others for aftercore
         if (get("_sourceTerminalEnhanceUses") === 0) SourceTerminal.enhance($effect`meat.enh`);
+
+        // Prepare latte
+        if (!get("latteModifier").includes("Meat Drop: 40") && get("_latteRefillsUsed") < 2) {
+          const modifiers = [];
+          if (get("latteUnlocks").includes("wing")) modifiers.push("wing");
+          if (get("latteUnlocks").includes("cajun")) modifiers.push("cajun");
+          modifiers.push("cinnamon", "pumpkin", "vanilla");
+          cliExecute(`latte refill ${modifiers.slice(0, 3).join(" ")}`); // Always unlocked
+        }
       },
       effects: $effects`Driving Observantly`,
       outfit: {
         back: $item`unwrapped knock-off retro superhero cape`,
         weapon: $item`astral pistol`,
-        offhand: $item`Half a Purse`,
+        offhand: getKramcoWandererChance() > 0.05 ? $item`Kramco Sausage-o-Matic™` : undefined,
         acc1: $item`lucky gold ring`,
         acc2: $item`mafia pointer finger ring`,
         acc3: $item`mafia thumb ring`,
@@ -209,6 +217,7 @@ export const GyouQuest: Quest = {
       outfit: {
         modifier: "meat",
         weapon: $item`haiku katana`,
+        offhand: getKramcoWandererChance() > 0.05 ? $item`Kramco Sausage-o-Matic™` : undefined,
         acc1: $item`lucky gold ring`,
         acc2: $item`mafia pointer finger ring`,
         familiar: $familiar`Space Jellyfish`,
