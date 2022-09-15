@@ -16,6 +16,6 @@ export enum Leg {
 
 export function getCurrentLeg(): number {
   if (myDaycount() > 1) return Leg.Aftercore;
-  if (myPath() === "Grey You" || get("gooseReprocessed") !== "") return Leg.GreyYou;
+  if (myPath() == "Grey You" || get("gooseReprocessed") !== "") return Leg.GreyYou;
   return Leg.Casual;
 }

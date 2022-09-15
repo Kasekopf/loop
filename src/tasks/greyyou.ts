@@ -96,6 +96,13 @@ const gear: Task[] = [
     },
     limit: { tries: 1 },
   },
+  {
+    name: "Asdon",
+    after: [],
+    completed: () => have($item`Asdon Martin keyfob`) || have($item`cold medicine cabinet`),
+    do: () => cliExecute("pull Asdon Martin keyfob"),
+    limit: { tries: 1 },
+  },
 ];
 
 export const GyouQuest: Quest = {
@@ -150,6 +157,7 @@ export const GyouQuest: Quest = {
         // Use only the first source terminal enhance, save the others for aftercore
         if (get("_sourceTerminalEnhanceUses") === 0) SourceTerminal.enhance($effect`meat.enh`);
       },
+      effects: $effects`Driving Observantly`,
       outfit: {
         back: $item`unwrapped knock-off retro superhero cape`,
         weapon: $item`astral pistol`,
@@ -205,7 +213,7 @@ export const GyouQuest: Quest = {
         acc2: $item`mafia pointer finger ring`,
         familiar: $familiar`Space Jellyfish`,
       },
-      effects: $effects`How to Scam Tourists`,
+      effects: $effects`How to Scam Tourists, Driving Observantly`,
       combat: new CombatStrategy().macro(
         new Macro()
           .trySkill($skill`Bowl Straight Up`)
