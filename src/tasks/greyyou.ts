@@ -29,6 +29,7 @@ import {
   $location,
   $skill,
   ascend,
+  AsdonMartin,
   ensureEffect,
   get,
   getKramcoWandererChance,
@@ -157,19 +158,29 @@ export const GyouQuest: Quest = {
         if (get("_sourceTerminalEnhanceUses") === 0) SourceTerminal.enhance($effect`meat.enh`);
 
         // Prepare latte
-        if (!get("latteModifier").includes("Meat Drop: 40") && get("_latteRefillsUsed") < 2) {
+        if (
+          have($item`latte lovers member's mug`) &&
+          !get("latteModifier").includes("Meat Drop: 40") &&
+          get("_latteRefillsUsed") < 2
+        ) {
           const modifiers = [];
           if (get("latteUnlocks").includes("wing")) modifiers.push("wing");
           if (get("latteUnlocks").includes("cajun")) modifiers.push("cajun");
           modifiers.push("cinnamon", "pumpkin", "vanilla");
           cliExecute(`latte refill ${modifiers.slice(0, 3).join(" ")}`); // Always unlocked
         }
+
+        // Prepare Asdon buff
+        if (AsdonMartin.installed() && !have($effect`Driving Observantly`))
+          AsdonMartin.drive(AsdonMartin.Driving.Observantly);
       },
-      effects: $effects`Driving Observantly`,
       outfit: {
         back: $item`unwrapped knock-off retro superhero cape`,
         weapon: $item`astral pistol`,
-        offhand: getKramcoWandererChance() > 0.05 ? $item`Kramco Sausage-o-Matic™` : undefined,
+        offhand:
+          getKramcoWandererChance() > 0.05
+            ? $item`Kramco Sausage-o-Matic™`
+            : $item`latte lovers member's mug`,
         acc1: $item`lucky gold ring`,
         acc2: $item`mafia pointer finger ring`,
         acc3: $item`mafia thumb ring`,
@@ -212,17 +223,26 @@ export const GyouQuest: Quest = {
       after: ["Ascend", "Tower", ...gear.map((task) => task.name)],
       // eslint-disable-next-line libram/verify-constants
       completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
-      prepare: () => restoreMp(10),
+      prepare: (): void => {
+        restoreMp(10);
+
+        // Prepare Asdon buff
+        if (AsdonMartin.installed() && !have($effect`Driving Observantly`))
+          AsdonMartin.drive(AsdonMartin.Driving.Observantly);
+      },
       do: $location`Barf Mountain`,
       outfit: {
         modifier: "meat",
         weapon: $item`haiku katana`,
-        offhand: getKramcoWandererChance() > 0.05 ? $item`Kramco Sausage-o-Matic™` : undefined,
+        offhand:
+          getKramcoWandererChance() > 0.05
+            ? $item`Kramco Sausage-o-Matic™`
+            : $item`latte lovers member's mug`,
         acc1: $item`lucky gold ring`,
         acc2: $item`mafia pointer finger ring`,
         familiar: $familiar`Space Jellyfish`,
       },
-      effects: $effects`How to Scam Tourists, Driving Observantly`,
+      effects: $effects`How to Scam Tourists`,
       combat: new CombatStrategy().macro(
         new Macro()
           .trySkill($skill`Bowl Straight Up`)
