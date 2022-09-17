@@ -106,6 +106,13 @@ const gear: Task[] = [
     do: () => cliExecute("pull Asdon Martin keyfob"),
     limit: { tries: 1 },
   },
+  {
+    name: "Potted Plant",
+    after: [],
+    completed: () => have($item`carnivorous potted plant`),
+    do: () => cliExecute("pull carnivorous potted plant"),
+    limit: { tries: 1 },
+  },
 ];
 
 export const GyouQuest: Quest = {

@@ -2050,10 +2050,10 @@ graceful-fs@^4.1.2, graceful-fs@^4.2.4, graceful-fs@^4.2.9:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
 
-grimoire-kolmafia@0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/grimoire-kolmafia/-/grimoire-kolmafia-0.3.2.tgz#d0e16197e56478924bac36262cb2b9edbcf1c6db"
-  integrity sha512-sUD0jrDxB8wMFbL3a7VjUPLOav7AehIJ7hN3QmXOoIt0O+tGBxejOMriWePezAY1d9QaweCqStZBxpaYlPoUww==
+grimoire-kolmafia@0.3.5:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/grimoire-kolmafia/-/grimoire-kolmafia-0.3.5.tgz#0d2236007c0eb2b38cb9ad4103c46608a59e7bbc"
+  integrity sha512-qcc+wUivFVfFUlefLJMqJzNCnnK5krcf1P/tL20Ni168g9mdvX8aRKXjLIkupaNsLrd0zeCdba/d9lnAc7ITMQ==
   dependencies:
     core-js "^3.16.4"
 
