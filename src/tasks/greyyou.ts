@@ -1,8 +1,10 @@
 import { CombatStrategy, step } from "grimoire-kolmafia";
 import {
   autosell,
+  buy,
   buyUsingStorage,
   cliExecute,
+  getFuel,
   itemAmount,
   knollAvailable,
   myAdventures,
@@ -70,7 +72,6 @@ const gear: Task[] = [
       );
       autosell($item`hamethyst`, itemAmount($item`hamethyst`));
       autosell($item`baconstone`, itemAmount($item`baconstone`));
-      autosell($item`porquoise`, itemAmount($item`porquoise`));
     },
     limit: { tries: 1 },
   },
@@ -146,7 +147,7 @@ export const GyouQuest: Quest = {
       name: "Run",
       after: ["Ascend", ...gear.map((task) => task.name)],
       completed: () => step("questL13Final") !== -1,
-      do: () => cliExecute("loopgyou delaytower pulls=19"),
+      do: () => cliExecute("loopgyou delaytower tune=wombat"),
       limit: { tries: 1 },
       tracking: "Run",
     },
@@ -178,8 +179,16 @@ export const GyouQuest: Quest = {
         }
 
         // Prepare Asdon buff
-        if (AsdonMartin.installed() && !have($effect`Driving Observantly`))
+        if (AsdonMartin.installed() && !have($effect`Driving Observantly`)) {
+          if (getFuel() < 37 && itemAmount($item`wad of dough`) < 8) {
+            // Get more wads of dough. We must do this ourselves since
+            // retrieveItem($item`loaf of soda bread`) in libram will not
+            // consider all-purpose flower.
+            buy($item`all-purpose flower`);
+            use($item`all-purpose flower`);
+          }
           AsdonMartin.drive(AsdonMartin.Driving.Observantly);
+        }
       },
       outfit: {
         back: $item`unwrapped knock-off retro superhero cape`,
