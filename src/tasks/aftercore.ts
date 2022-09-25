@@ -100,7 +100,7 @@ export function garboAscend(after: string[], garbo: string): Task[] {
       after: [...after, "Overdrink"],
       prepare: () => uneffect($effect`Drenched in Lava`),
       completed: () => myAdventures() === 0 && myInebriety() > inebrietyLimit(),
-      do: () => cliExecute("garbo"),
+      do: () => cliExecute("garbo ascend"),
       limit: { tries: 1 },
     },
   ];
