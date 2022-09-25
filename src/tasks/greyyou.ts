@@ -146,7 +146,8 @@ export const GyouQuest: Quest = {
     {
       name: "Run",
       after: ["Ascend", ...gear.map((task) => task.name)],
-      completed: () => step("questL13Final") !== -1,
+      completed: () =>
+        step("questL13Final") !== -1 && get("gooseReprocessed").split(",").length === 73,
       do: () => cliExecute("loopgyou delaytower tune=wombat"),
       limit: { tries: 1 },
       tracking: "Run",
