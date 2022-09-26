@@ -4,7 +4,9 @@ import {
   buy,
   buyUsingStorage,
   cliExecute,
+  descToItem,
   getFuel,
+  getWorkshed,
   itemAmount,
   knollAvailable,
   myAdventures,
@@ -18,6 +20,7 @@ import {
   runChoice,
   storageAmount,
   toInt,
+  totalTurnsPlayed,
   use,
   useSkill,
   visitUrl,
@@ -107,13 +110,6 @@ const gear: Task[] = [
     do: () => cliExecute("pull Asdon Martin keyfob"),
     limit: { tries: 1 },
   },
-  {
-    name: "Potted Plant",
-    after: [],
-    completed: () => have($item`carnivorous potted plant`),
-    do: () => cliExecute("pull carnivorous potted plant"),
-    limit: { tries: 1 },
-  },
 ];
 
 export const GyouQuest: Quest = {
@@ -179,6 +175,15 @@ export const GyouQuest: Quest = {
           cliExecute(`latte refill ${modifiers.slice(0, 3).join(" ")}`); // Always unlocked
         }
 
+        // Swap to asdon when all extrovermectins are done
+        if (
+          have($item`Asdon Martin keyfob`) &&
+          getWorkshed() === $item`cold medicine cabinet` &&
+          get("_coldMedicineConsults") >= 5
+        ) {
+          use($item`Asdon Martin keyfob`);
+        }
+
         // Prepare Asdon buff
         if (AsdonMartin.installed() && !have($effect`Driving Observantly`)) {
           if (getFuel() < 37 && itemAmount($item`wad of dough`) < 8) {
@@ -191,6 +196,7 @@ export const GyouQuest: Quest = {
           AsdonMartin.drive(AsdonMartin.Driving.Observantly);
         }
       },
+      post: getExtros,
       outfit: {
         back: $item`unwrapped knock-off retro superhero cape`,
         weapon: $item`astral pistol`,
@@ -313,3 +319,21 @@ export const GyouQuest: Quest = {
     ),
   ],
 };
+
+function getExtros(): void {
+  if (getWorkshed() !== $item`cold medicine cabinet`) return;
+  if (get("_coldMedicineConsults") >= 5 || get("_nextColdMedicineConsult") > totalTurnsPlayed()) {
+    return;
+  }
+  const options = visitUrl("campground.php?action=workshed");
+  let match;
+  const regexp = /descitem\((\d+)\)/g;
+  while ((match = regexp.exec(options)) !== null) {
+    const item = descToItem(match[1]);
+    if (item === $item`Extrovermectin™`) {
+      visitUrl("campground.php?action=workshed");
+      runChoice(5);
+      return;
+    }
+  }
+}
