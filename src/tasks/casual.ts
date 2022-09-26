@@ -67,7 +67,7 @@ export const CasualQuest: Quest = {
       name: "Run",
       after: ["Ascend"],
       completed: () => step("questL13Final") > 11,
-      do: () => cliExecute("loopcasual"),
+      do: () => cliExecute("loopcasual fluffers=false stomach=10"),
       limit: { tries: 1 },
       tracking: "Run",
     },
