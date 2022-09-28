@@ -108,7 +108,7 @@ export const CasualQuest: Quest = {
       do: (): void => {
         if (have($item`can of Rain-Doh`) && !have($item`Rain-Doh blue balls`))
           use($item`can of Rain-Doh`);
-        cliExecute("garbo");
+        cliExecute("garbo yachtzeechain");
       },
       limit: { tries: 1 },
       tracking: "Garbo",
