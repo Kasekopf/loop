@@ -1,7 +1,10 @@
 import {
+  autosellPrice,
   Coinmaster,
   gamedayToInt,
   gametimeToInt,
+  historicalAge,
+  historicalPrice,
   Item,
   myAscensions,
   myTurncount,
@@ -136,12 +139,20 @@ const specialValueLookup = new Map<Item, () => number>([
   [$item`fake hand`, () => 50000],
 ]);
 
+function getHistoricalSaleValue(item: Item) {
+  if (historicalAge(item) <= 7.0 && historicalPrice(item) > 0) {
+    const isMallMin = historicalPrice(item) === Math.max(100, 2 * autosellPrice(item));
+    return isMallMin ? autosellPrice(item) : 0.9 * historicalPrice(item);
+  }
+  return getSaleValue(item);
+}
+
 const garboValueCache = new Map<Item, number>();
 export function garboValue(item: Item): number {
   const cachedValue = garboValueCache.get(item);
   if (cachedValue === undefined) {
     const specialValueCompute = specialValueLookup.get(item);
-    const value = specialValueCompute ? specialValueCompute() : getSaleValue(item);
+    const value = specialValueCompute ? specialValueCompute() : getHistoricalSaleValue(item);
     print(`Valuing ${item.name} @ ${value}`);
     garboValueCache.set(item, value);
     return value;
