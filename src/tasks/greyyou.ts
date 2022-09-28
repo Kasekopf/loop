@@ -8,7 +8,6 @@ import {
   getFuel,
   getWorkshed,
   itemAmount,
-  knollAvailable,
   myAdventures,
   myAscensions,
   myClass,
@@ -16,13 +15,11 @@ import {
   myStorageMeat,
   myTurncount,
   restoreMp,
-  retrieveItem,
   runChoice,
   storageAmount,
   toInt,
   totalTurnsPlayed,
   use,
-  useSkill,
   visitUrl,
 } from "kolmafia";
 import {
@@ -90,17 +87,6 @@ const gear: Task[] = [
     after: [],
     completed: () => have($item`mafia pointer finger ring`),
     do: () => cliExecute("pull mafia pointer finger ring"),
-    limit: { tries: 1 },
-  },
-  {
-    name: "Offhand",
-    after: [],
-    completed: () => have($item`Half a Purse`),
-    ready: () => knollAvailable(),
-    do: () => {
-      if (!have($item`lump of Brituminous coal`)) useSkill($skill`Summon Smithsness`);
-      retrieveItem($item`Half a Purse`);
-    },
     limit: { tries: 1 },
   },
   {
@@ -219,7 +205,7 @@ export const GyouQuest: Quest = {
           .skill($skill`Double Nanovision`)
           .repeat()
       ),
-      limit: { tries: 450 },
+      limit: { tries: 550 },
       tracking: "GooFarming",
     },
     {
