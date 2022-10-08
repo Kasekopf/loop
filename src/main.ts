@@ -15,6 +15,7 @@ export const args = Args.create("loop", "A script for a full loop.", {
     Item.get,
     "ITEM"
   ),
+  pvp: Args.flag({ help: "If true, break hippy stone and do pvp.", default: false }),
   abort: Args.string({
     help: "If given, abort during the prepare() step for the task with matching name.",
   }),

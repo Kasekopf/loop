@@ -7,6 +7,7 @@ import {
   descToItem,
   getFuel,
   getWorkshed,
+  hippyStoneBroken,
   itemAmount,
   myAdventures,
   myAscensions,
@@ -47,7 +48,7 @@ import {
 } from "libram";
 import { getCurrentLeg, Leg, Quest, Task } from "./structure";
 import { args } from "../main";
-import { garboAscend } from "./aftercore";
+import { garboAscend, pvp } from "./aftercore";
 
 const gear: Task[] = [
   {
@@ -105,7 +106,7 @@ export const GyouQuest: Quest = {
     {
       name: "Ascend",
       completed: () => getCurrentLeg() >= Leg.GreyYou,
-      after: ["Aftercore/Overdrunk"],
+      after: ["Aftercore/Overdrunk", "Aftercore/Fights"],
       do: (): void => {
         prepareAscension({
           eudora: "Our Daily Candles™ order form",
@@ -126,8 +127,17 @@ export const GyouQuest: Quest = {
     },
     ...gear,
     {
+      name: "Break Stone",
+      completed: () => hippyStoneBroken() || !args.pvp,
+      do: (): void => {
+        visitUrl("peevpee.php?action=smashstone&pwd&confirm=on", true);
+        visitUrl("peevpee.php?place=fight");
+      },
+      limit: { tries: 1 },
+    },
+    {
       name: "Run",
-      after: ["Ascend", ...gear.map((task) => task.name)],
+      after: ["Ascend", "Break Stone", ...gear.map((task) => task.name)],
       completed: () =>
         step("questL13Final") !== -1 && get("gooseReprocessed").split(",").length === 73,
       do: () => cliExecute("loopgyou delaytower tune=wombat"),
@@ -303,6 +313,7 @@ export const GyouQuest: Quest = {
       ["Ascend", "Prism", "Pull All", "Level", "Duplicate", "Breakfast"],
       "garbo yachtzeechain ascend"
     ),
+    ...pvp(["Overdrunk"]),
   ],
 };
 

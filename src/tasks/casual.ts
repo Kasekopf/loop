@@ -4,12 +4,14 @@ import {
   cliExecute,
   getWorkshed,
   haveEffect,
+  hippyStoneBroken,
   inebrietyLimit,
   myAdventures,
   myAscensions,
   myInebriety,
   toInt,
   use,
+  visitUrl,
 } from "kolmafia";
 import {
   $class,
@@ -31,7 +33,7 @@ import {
 import { drive } from "libram/dist/resources/2017/AsdonMartin";
 import { getCurrentLeg, Leg, Quest } from "./structure";
 import { args } from "../main";
-import { canEat } from "./aftercore";
+import { canEat, pvp } from "./aftercore";
 
 export const CasualQuest: Quest = {
   name: "Casual",
@@ -39,7 +41,7 @@ export const CasualQuest: Quest = {
     {
       name: "Ascend",
       completed: () => getCurrentLeg() >= Leg.Casual,
-      after: ["Grey You/Overdrunk"],
+      after: ["Grey You/Overdrunk", "Grey You/Fights"],
       do: (): void => {
         prepareAscension({
           workshed: "Asdon Martin keyfob",
@@ -64,8 +66,17 @@ export const CasualQuest: Quest = {
       limit: { tries: 1 },
     },
     {
+      name: "Break Stone",
+      completed: () => hippyStoneBroken() || !args.pvp,
+      do: (): void => {
+        visitUrl("peevpee.php?action=smashstone&pwd&confirm=on", true);
+        visitUrl("peevpee.php?place=fight");
+      },
+      limit: { tries: 1 },
+    },
+    {
       name: "Run",
-      after: ["Ascend"],
+      after: ["Ascend", "Break Stone"],
       completed: () => step("questL13Final") > 11,
       do: () => cliExecute("loopcasual fluffers=false stomach=10"),
       limit: { tries: 1 },
@@ -127,9 +138,10 @@ export const CasualQuest: Quest = {
       do: () => cliExecute("CONSUME NIGHTCAP"),
       limit: { tries: 1 },
     },
+    ...pvp(["Nightcap"]),
     {
       name: "Chateau Sleep",
-      after: ["Ascend", "Nightcap"],
+      after: ["Ascend", "Nightcap", "Fights"],
       completed: () =>
         !ChateauMantegna.have() || ChateauMantegna.getCeiling() === "artificial skylight",
       do: () => ChateauMantegna.changeCeiling("artificial skylight"),
@@ -138,7 +150,7 @@ export const CasualQuest: Quest = {
     {
       name: "Sleep",
       completed: () => haveInCampground($item`clockwork maid`),
-      after: ["Ascend", "Nightcap"],
+      after: ["Ascend", "Nightcap", "Fights"],
       acquire: [{ item: $item`burning cape`, optional: true }],
       do: (): void => {
         if (!haveInCampground($item`clockwork maid`)) {

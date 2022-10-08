@@ -3,12 +3,14 @@ import {
   cliExecute,
   drink,
   fullnessLimit,
+  hippyStoneBroken,
   inebrietyLimit,
   myAdventures,
   myFamiliar,
   myFullness,
   myInebriety,
   mySpleenUse,
+  pvpAttacksLeft,
   spleenLimit,
   use,
   useSkill,
@@ -26,6 +28,7 @@ import {
   Macro,
   uneffect,
 } from "libram";
+import { args } from "../main";
 import { getCurrentLeg, Leg, Quest, Task } from "./structure";
 
 export function canEat(): boolean {
@@ -102,6 +105,32 @@ export function garboAscend(after: string[], garbo: string): Task[] {
       completed: () => myAdventures() === 0 && myInebriety() > inebrietyLimit(),
       do: () => cliExecute("garbo ascend"),
       limit: { tries: 1 },
+      tracking: "Garbo",
+    },
+  ];
+}
+
+export function pvp(after: string[]): Task[] {
+  return [
+    {
+      name: "Meteorite-Ade",
+      after: [...after],
+      ready: () => hippyStoneBroken(),
+      do: () => use($item`Meteorite-Ade`, 3 - get("_meteoriteAdesUsed")),
+      completed: () => get("_meteoriteAdesUsed") >= 3 || !args.pvp,
+      limit: { tries: 1 },
+    },
+    {
+      name: "Fights",
+      after: [...after, "Meteorite-Ade"],
+      ready: () => hippyStoneBroken(),
+      do: () => {
+        cliExecute("unequip");
+        cliExecute("UberPvPOptimizer");
+        cliExecute("swagger");
+      },
+      completed: () => pvpAttacksLeft() === 0 || !args.pvp,
+      limit: { tries: 1 },
     },
   ];
 }
@@ -118,5 +147,6 @@ export const AftercoreQuest: Quest = {
       limit: { tries: 1 },
     },
     ...garboAscend(["Breakfast"], "garbo yachtzeechain ascend"),
+    ...pvp(["Overdrunk"]),
   ],
 };
