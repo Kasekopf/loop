@@ -96,7 +96,7 @@ export function garboAscend(after: string[], garbo: string): Task[] {
       do: () => drink($item`Schrödinger's thermos`),
       completed: () => myInebriety() > inebrietyLimit(),
       effects: $effects`Ode to Booze`,
-      limit: { tries: 1 },
+      limit: { tries: 3 }, // Might be too high level?
     },
     {
       name: "Overdrunk",
