@@ -30,6 +30,7 @@ import {
   $familiar,
   $item,
   $location,
+  $monster,
   $skill,
   ascend,
   AsdonMartin,
@@ -209,15 +210,17 @@ export const GyouQuest: Quest = {
         familiar: $familiar`Space Jellyfish`,
         modifier: "meat",
       },
-      combat: new CombatStrategy().macro(
-        new Macro()
-          .trySkill($skill`Bowl Straight Up`)
-          .skill($skill`Extract Jelly`)
-          .skill($skill`Sing Along`)
-          .skill($skill`Precision Shot`)
-          .skill($skill`Double Nanovision`)
-          .repeat()
-      ),
+      combat: new CombatStrategy()
+        .macro(
+          new Macro()
+            .trySkill($skill`Bowl Straight Up`)
+            .skill($skill`Extract Jelly`)
+            .skill($skill`Sing Along`)
+            .skill($skill`Precision Shot`)
+            .skill($skill`Double Nanovision`)
+            .repeat()
+        )
+        .macro(new Macro().skill($skill`Double Nanovision`).repeat(), $monster`sausage goblin`),
       limit: { tries: 550 },
       tracking: "GooFarming",
     },
@@ -265,15 +268,17 @@ export const GyouQuest: Quest = {
         familiar: $familiar`Space Jellyfish`,
       },
       effects: $effects`How to Scam Tourists`,
-      combat: new CombatStrategy().macro(
-        new Macro()
-          .trySkill($skill`Bowl Straight Up`)
-          .skill($skill`Extract Jelly`)
-          .skill($skill`Sing Along`)
-          .skill($skill`Summer Siesta`)
-          .skill($skill`Double Nanovision`)
-          .repeat()
-      ),
+      combat: new CombatStrategy()
+        .macro(
+          new Macro()
+            .trySkill($skill`Bowl Straight Up`)
+            .skill($skill`Extract Jelly`)
+            .skill($skill`Sing Along`)
+            .skill($skill`Summer Siesta`)
+            .skill($skill`Double Nanovision`)
+            .repeat()
+        )
+        .macro(new Macro().skill($skill`Double Nanovision`).repeat(), $monster`sausage goblin`),
       limit: { tries: 150 },
       tracking: "GooFarming",
     },
