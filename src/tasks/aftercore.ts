@@ -1,7 +1,6 @@
 import { CombatStrategy } from "grimoire-kolmafia";
 import {
   cliExecute,
-  drink,
   fullnessLimit,
   hippyStoneBroken,
   inebrietyLimit,
@@ -12,8 +11,10 @@ import {
   mySpleenUse,
   pvpAttacksLeft,
   spleenLimit,
+  toInt,
   use,
   useSkill,
+  visitUrl,
 } from "kolmafia";
 import {
   $effect,
@@ -93,7 +94,10 @@ export function garboAscend(after: string[], garbo: string): Task[] {
     {
       name: "Overdrink",
       after: [...after, "Stooper"],
-      do: () => drink($item`Schrödinger's thermos`),
+      do: () => {
+        // drink($item`Schrödinger's thermos`),
+        visitUrl(`inv_booze.php?pwd&which=1&whichitem=${toInt($item`Schrödinger's thermos`)}`);
+      },
       completed: () => myInebriety() > inebrietyLimit(),
       effects: $effects`Ode to Booze`,
       limit: { tries: 3 }, // Might be too high level?
