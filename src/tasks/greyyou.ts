@@ -7,6 +7,7 @@ import {
   descToItem,
   getFuel,
   getWorkshed,
+  haveEffect,
   hippyStoneBroken,
   itemAmount,
   myAdventures,
@@ -50,6 +51,7 @@ import {
 import { getCurrentLeg, Leg, Quest, Task } from "./structure";
 import { args } from "../main";
 import { garboAscend, pvp } from "./aftercore";
+import { drive } from "libram/dist/resources/2017/AsdonMartin";
 
 const gear: Task[] = [
   {
@@ -319,6 +321,19 @@ export const GyouQuest: Quest = {
       combat: new CombatStrategy().macro(new Macro().attack().repeat()),
       outfit: { familiar: $familiar`Machine Elf`, modifier: "muscle" },
       limit: { tries: 6 },
+    },
+    {
+      name: "Workshed",
+      after: ["Ascend", "Prism", "Pull All", "Level"],
+      completed: () => getWorkshed() === $item`cold medicine cabinet` || get("_workshedItemUsed"),
+      do: (): void => {
+        if (getWorkshed() === $item`Asdon Martin keyfob`) {
+          if (haveEffect($effect`Driving Observantly`) < 900)
+            drive($effect`Driving Observantly`, 900 - haveEffect($effect`Driving Observantly`));
+        }
+        use($item`cold medicine cabinet`);
+      },
+      limit: { tries: 1 },
     },
     {
       name: "Breakfast",
