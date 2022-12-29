@@ -220,7 +220,13 @@ export const GyouQuest: Quest = {
             .skill($skill`Double Nanovision`)
             .repeat()
         )
-        .macro(new Macro().skill($skill`Double Nanovision`).repeat(), $monster`sausage goblin`),
+        .macro(
+          new Macro()
+            .while_("!mpbelow 20", new Macro().skill($skill`Double Nanovision`))
+            .attack()
+            .repeat(),
+          $monster`sausage goblin`
+        ),
       limit: { tries: 550 },
       tracking: "GooFarming",
     },
@@ -278,7 +284,14 @@ export const GyouQuest: Quest = {
             .skill($skill`Double Nanovision`)
             .repeat()
         )
-        .macro(new Macro().skill($skill`Double Nanovision`).repeat(), $monster`sausage goblin`),
+        .macro(
+          new Macro()
+            .skill($skill`Falling Leaf Whirlwind`)
+            .while_("!mpbelow 20", new Macro().skill($skill`Double Nanovision`))
+            .attack()
+            .repeat(),
+          $monster`sausage goblin`
+        ),
       limit: { tries: 150 },
       tracking: "GooFarming",
     },
