@@ -1,6 +1,6 @@
 import { Quest as BaseQuest, Task as BaseTask, Limit } from "grimoire-kolmafia";
-import { myDaycount, myPath } from "kolmafia";
-import { get } from "libram";
+import { myClass, myDaycount } from "kolmafia";
+import { $class, get } from "libram";
 
 export type Task = BaseTask & {
   tracking?: string;
@@ -16,6 +16,6 @@ export enum Leg {
 
 export function getCurrentLeg(): number {
   if (myDaycount() > 1) return Leg.Aftercore;
-  if (myPath() == "Grey You" || get("gooseReprocessed") !== "") return Leg.GreyYou;
+  if (myClass() !== $class`Grey Goo` || get("gooseReprocessed") !== "") return Leg.GreyYou;
   return Leg.Casual;
 }

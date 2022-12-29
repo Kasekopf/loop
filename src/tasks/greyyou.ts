@@ -252,7 +252,6 @@ export const GyouQuest: Quest = {
     {
       name: "In-Run Farm Final",
       after: ["Ascend", "Tower", ...gear.map((task) => task.name)],
-      // eslint-disable-next-line libram/verify-constants
       completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
       prepare: (): void => {
         restoreMp(10);
@@ -298,7 +297,6 @@ export const GyouQuest: Quest = {
     {
       name: "Prism",
       after: ["Ascend", "In-Run Farm Final"],
-      // eslint-disable-next-line libram/verify-constants
       completed: () => myClass() !== $class`Grey Goo`,
       do: () => cliExecute("loopgyou class=1"),
       limit: { tries: 1 },
@@ -306,7 +304,6 @@ export const GyouQuest: Quest = {
     {
       name: "Level",
       after: ["Ascend", "Prism", "Pull All"],
-      // eslint-disable-next-line libram/verify-constants
       completed: () => myClass() !== $class`Grey Goo` && myLevel() >= 13,
       do: () => cliExecute("loopcasual goal=level"),
       limit: { tries: 1 },
