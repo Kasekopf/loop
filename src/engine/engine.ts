@@ -1,6 +1,6 @@
 import { Engine } from "grimoire-kolmafia";
 import { PropertiesManager } from "libram";
-import { getCurrentLeg, Task } from "../tasks/structure";
+import { ascended, Task } from "../tasks/structure";
 import { printProfits, ProfitTracker } from "./profits";
 
 export class ProfitTrackingEngine extends Engine<never, Task> {
@@ -14,7 +14,7 @@ export class ProfitTrackingEngine extends Engine<never, Task> {
     try {
       super.execute(task);
     } finally {
-      this.profits.record(`${getCurrentLeg()}@${task.tracking ?? "Other"}`);
+      this.profits.record(`${ascended() ? 1 : 0}@${task.tracking ?? "Other"}`);
     }
   }
 

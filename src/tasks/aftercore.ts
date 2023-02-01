@@ -30,7 +30,7 @@ import {
   uneffect,
 } from "libram";
 import { args } from "../main";
-import { getCurrentLeg, Leg, Quest, Task } from "./structure";
+import { ascended, Quest, Task } from "./structure";
 
 export function canEat(): boolean {
   return (
@@ -141,7 +141,7 @@ export function pvp(after: string[]): Task[] {
 
 export const AftercoreQuest: Quest = {
   name: "Aftercore",
-  completed: () => getCurrentLeg() > Leg.Aftercore,
+  completed: () => ascended(),
   tasks: [
     {
       name: "Breakfast",

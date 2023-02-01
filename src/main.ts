@@ -2,6 +2,7 @@ import { Item, print } from "kolmafia";
 import { $item } from "libram";
 import { Args, getTasks } from "grimoire-kolmafia";
 import { AftercoreQuest } from "./tasks/aftercore";
+import { postQuest } from "./tasks/post";
 import { GyouQuest } from "./tasks/greyyou";
 import { CasualQuest } from "./tasks/casual";
 import { ProfitTrackingEngine } from "./engine/engine";
@@ -15,6 +16,16 @@ export const args = Args.create("loop", "A script for a full loop.", {
     Item.get,
     "ITEM"
   ),
+  run: Args.string({
+    help: "Which type of run to do for the second leg.",
+    default: "casual",
+    options: [
+      ["none", "Stay in aftercore"],
+      ["gyou", "Grey You run (broken)"],
+      ["casual", "Casual run"],
+      ["custom", "Jump the gash manually"],
+    ],
+  }),
   pvp: Args.flag({ help: "If true, break hippy stone and do pvp.", default: false }),
   abort: Args.string({
     help: "If given, abort during the prepare() step for the task with matching name.",
@@ -27,7 +38,7 @@ export function main(command?: string): void {
     return;
   }
 
-  const tasks = getTasks([AftercoreQuest, GyouQuest, CasualQuest]);
+  const tasks = getTasks(getQuests(args.run));
 
   // Abort during the prepare() step of the specified task
   if (args.abort) {
@@ -61,5 +72,24 @@ export function main(command?: string): void {
     }
   } finally {
     engine.destruct();
+  }
+}
+
+function getQuests(run: string) {
+  switch (run) {
+    case "none":
+      return [postQuest([])];
+    case "gyou":
+      return [
+        AftercoreQuest,
+        GyouQuest,
+        postQuest(["Grey You/Ascend", "Grey You/Run", "Grey You/Level"]),
+      ];
+    case "casual":
+      return [AftercoreQuest, CasualQuest, postQuest(["Casual/Ascend", "Casual/Run"])];
+    case "custom":
+      return [AftercoreQuest];
+    default:
+      throw `Unknown run type ${run}`;
   }
 }

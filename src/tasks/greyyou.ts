@@ -7,7 +7,6 @@ import {
   descToItem,
   getFuel,
   getWorkshed,
-  haveEffect,
   hippyStoneBroken,
   itemAmount,
   myAdventures,
@@ -48,10 +47,8 @@ import {
   set,
   SourceTerminal,
 } from "libram";
-import { getCurrentLeg, Leg, Quest, Task } from "./structure";
+import { ascended, Quest, Task } from "./structure";
 import { args } from "../main";
-import { garboAscend, pvp } from "./aftercore";
-import { drive } from "libram/dist/resources/2017/AsdonMartin";
 
 const gear: Task[] = [
   {
@@ -107,11 +104,10 @@ const gear: Task[] = [
 
 export const GyouQuest: Quest = {
   name: "Grey You",
-  completed: () => getCurrentLeg() > Leg.GreyYou,
   tasks: [
     {
       name: "Ascend",
-      completed: () => getCurrentLeg() >= Leg.GreyYou,
+      completed: () => ascended(),
       after: ["Aftercore/Overdrunk", "Aftercore/Fights"],
       do: (): void => {
         prepareAscension({
@@ -322,31 +318,6 @@ export const GyouQuest: Quest = {
       outfit: { familiar: $familiar`Machine Elf`, modifier: "muscle" },
       limit: { tries: 6 },
     },
-    {
-      name: "Workshed",
-      after: ["Ascend", "Prism", "Pull All", "Level"],
-      completed: () => getWorkshed() === $item`cold medicine cabinet` || get("_workshedItemUsed"),
-      do: (): void => {
-        if (getWorkshed() === $item`Asdon Martin keyfob`) {
-          if (haveEffect($effect`Driving Observantly`) < 900)
-            drive($effect`Driving Observantly`, 900 - haveEffect($effect`Driving Observantly`));
-        }
-        use($item`cold medicine cabinet`);
-      },
-      limit: { tries: 1 },
-    },
-    {
-      name: "Breakfast",
-      after: ["Ascend", "Prism", "Pull All", "Level"],
-      completed: () => get("breakfastCompleted"),
-      do: () => cliExecute("breakfast"),
-      limit: { tries: 1 },
-    },
-    ...garboAscend(
-      ["Ascend", "Prism", "Pull All", "Level", "Duplicate", "Breakfast"],
-      "garbo yachtzeechain ascend"
-    ),
-    ...pvp(["Overdrunk"]),
   ],
 };
 
