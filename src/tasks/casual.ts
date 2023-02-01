@@ -48,10 +48,10 @@ export const CasualQuest: Quest = {
       after: ["Ascend", "Break Stone"],
       completed: () => step("questL13Final") > 11 && have($skill`Liver of Steel`),
       do: (): void => {
-        cliExecute("loopcasual fluffers=false stomach=10 workshed='Asdon Martin keyfob'");
+        cliExecute("loopcasual fluffers=false stomach=15 workshed='Asdon Martin keyfob'");
         if (myAdventures() === 0 && !have($skill`Liver of Steel`)) {
           cliExecute("cast 2 ancestral recall");
-          cliExecute("loopcasual fluffers=false stomach=10");
+          cliExecute("loopcasual fluffers=false stomach=15");
         }
       },
       limit: { tries: 1 },
