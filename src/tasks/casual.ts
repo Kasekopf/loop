@@ -19,6 +19,7 @@ import {
   $familiar,
   $item,
   $location,
+  $skill,
   ascend,
   ChateauMantegna,
   get,
@@ -44,7 +45,7 @@ export const CasualQuest: Quest = {
       after: ["Grey You/Overdrunk", "Grey You/Fights"],
       do: (): void => {
         prepareAscension({
-          workshed: "Asdon Martin keyfob",
+          workshed: "cold medicine cabinet",
           garden: "packet of thanksgarden seeds",
           eudora: "GameInformPowerDailyPro subscription card",
           chateau: {
@@ -77,8 +78,14 @@ export const CasualQuest: Quest = {
     {
       name: "Run",
       after: ["Ascend", "Break Stone"],
-      completed: () => step("questL13Final") > 11,
-      do: () => cliExecute("loopcasual fluffers=false stomach=10"),
+      completed: () => step("questL13Final") > 11 && have($skill`Liver of Steel`),
+      do: (): void => {
+        cliExecute("loopcasual fluffers=false stomach=10 workshed='Asdon Martin keyfob'");
+        if (myAdventures() === 0 && !have($skill`Liver of Steel`)) {
+          cliExecute("cast 2 ancestral recall");
+          cliExecute("loopcasual fluffers=false stomach=10");
+        }
+      },
       limit: { tries: 1 },
       tracking: "Run",
     },
