@@ -9,13 +9,10 @@ import {
   getWorkshed,
   hippyStoneBroken,
   itemAmount,
-  myAdventures,
   myAscensions,
   myClass,
   myLevel,
-  myStorageMeat,
   myTurncount,
-  restoreMp,
   runChoice,
   storageAmount,
   toInt,
@@ -26,7 +23,6 @@ import {
 import {
   $class,
   $effect,
-  $effects,
   $familiar,
   $item,
   $location,
@@ -83,23 +79,13 @@ const gear: Task[] = [
     do: () => cliExecute("pull lucky gold ring"),
     limit: { tries: 1 },
   },
-  {
-    name: "Pointer Finger",
-    after: [],
-    completed: () => have($item`mafia pointer finger ring`),
-    do: () => cliExecute("pull mafia pointer finger ring"),
-    limit: { tries: 1 },
-  },
-  {
-    name: "Asdon",
-    after: [],
-    completed: () =>
-      have($item`Asdon Martin keyfob`) ||
-      have($item`cold medicine cabinet`) ||
-      storageAmount($item`Asdon Martin keyfob`) === 0,
-    do: () => cliExecute("pull Asdon Martin keyfob"),
-    limit: { tries: 1 },
-  },
+  // {
+  //   name: "Pointer Finger",
+  //   after: [],
+  //   completed: () => have($item`mafia pointer finger ring`),
+  //   do: () => cliExecute("pull mafia pointer finger ring"),
+  //   limit: { tries: 1 },
+  // },
 ];
 
 export const GyouQuest: Quest = {
@@ -140,16 +126,15 @@ export const GyouQuest: Quest = {
     {
       name: "Run",
       after: ["Ascend", "Break Stone", ...gear.map((task) => task.name)],
-      completed: () =>
-        step("questL13Final") !== -1 && get("gooseReprocessed").split(",").length === 73,
-      do: () => cliExecute("loopgyou delaytower tune=wombat"),
+      completed: () => step("questL13Final") > 11,
+      do: () => cliExecute("loopgyou tune=wombat"),
       limit: { tries: 1 },
       tracking: "Run",
     },
     {
-      name: "In-Run Farm Initial",
+      name: "In-Run Farm",
       after: ["Ascend", "Run", ...gear.map((task) => task.name)],
-      completed: () => myTurncount() >= 1000,
+      completed: () => myTurncount() <= 40 || myClass() !== $class`Grey Goo`,
       do: $location`Barf Mountain`,
       acquire: [{ item: $item`wad of used tape` }],
       prepare: (): void => {
@@ -203,7 +188,7 @@ export const GyouQuest: Quest = {
             ? $item`Kramco Sausage-o-Matic™`
             : $item`latte lovers member's mug`,
         acc1: $item`lucky gold ring`,
-        acc2: $item`mafia pointer finger ring`,
+        // acc2: $item`mafia pointer finger ring`,
         acc3: $item`mafia thumb ring`,
         familiar: $familiar`Space Jellyfish`,
         modifier: "meat",
@@ -229,86 +214,29 @@ export const GyouQuest: Quest = {
       tracking: "GooFarming",
     },
     {
-      name: "Pull All",
-      after: ["Ascend", "In-Run Farm Initial"],
-      completed: () => myStorageMeat() === 0 && storageAmount($item`festive warbear bank`) === 0, // arbitrary item,
-      do: (): void => {
-        cliExecute("pull all");
-        cliExecute("refresh all");
-      },
-      limit: { tries: 1 },
-      tracking: "Run",
-    },
-    {
-      name: "Tower",
-      after: ["Ascend", "Pull All", "In-Run Farm Initial"],
-      completed: () => step("questL13Final") > 11,
-      do: () => cliExecute("loopgyou delaytower"),
-      limit: { tries: 1 },
-      tracking: "Run",
-    },
-    {
-      name: "In-Run Farm Final",
-      after: ["Ascend", "Tower", ...gear.map((task) => task.name)],
-      completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
-      prepare: (): void => {
-        restoreMp(10);
-
-        // Prepare Asdon buff
-        if (AsdonMartin.installed() && !have($effect`Driving Observantly`))
-          AsdonMartin.drive(AsdonMartin.Driving.Observantly);
-      },
-      do: $location`Barf Mountain`,
-      outfit: {
-        modifier: "meat",
-        weapon: $item`haiku katana`,
-        offhand:
-          getKramcoWandererChance() > 0.05
-            ? $item`Kramco Sausage-o-Matic™`
-            : $item`latte lovers member's mug`,
-        acc1: $item`lucky gold ring`,
-        acc2: $item`mafia pointer finger ring`,
-        familiar: $familiar`Space Jellyfish`,
-      },
-      effects: $effects`How to Scam Tourists`,
-      combat: new CombatStrategy()
-        .macro(
-          new Macro()
-            .trySkill($skill`Bowl Straight Up`)
-            .skill($skill`Extract Jelly`)
-            .skill($skill`Sing Along`)
-            .skill($skill`Summer Siesta`)
-            .skill($skill`Double Nanovision`)
-            .repeat()
-        )
-        .macro(
-          new Macro()
-            .skill($skill`Falling Leaf Whirlwind`)
-            .while_("!mpbelow 20", new Macro().skill($skill`Double Nanovision`))
-            .attack()
-            .repeat(),
-          $monster`sausage goblin`
-        ),
-      limit: { tries: 150 },
-      tracking: "GooFarming",
-    },
-    {
       name: "Prism",
-      after: ["Ascend", "In-Run Farm Final"],
+      after: ["Ascend", "Run", "In-Run Farm"],
       completed: () => myClass() !== $class`Grey Goo`,
       do: () => cliExecute("loopgyou class=1"),
       limit: { tries: 1 },
     },
     {
       name: "Level",
-      after: ["Ascend", "Prism", "Pull All"],
+      after: ["Ascend", "Prism"],
       completed: () => myClass() !== $class`Grey Goo` && myLevel() >= 13,
       do: () => cliExecute("loopcasual goal=level"),
       limit: { tries: 1 },
     },
     {
+      name: "Organ",
+      after: ["Ascend", "Prism", "Level"],
+      completed: () => have($skill`Liver of Steel`),
+      do: () => cliExecute("loopcasual goal=organ"),
+      limit: { tries: 1 },
+    },
+    {
       name: "Duplicate",
-      after: ["Ascend", "Prism", "Pull All", "Level"],
+      after: ["Ascend", "Prism", "Level"],
       ready: () => have(args.duplicate),
       completed: () => get("lastDMTDuplication") === myAscensions(),
       prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.duplicate)}`),
