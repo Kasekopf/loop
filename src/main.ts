@@ -83,7 +83,7 @@ function getQuests(run: string) {
       return [
         AftercoreQuest,
         GyouQuest,
-        postQuest(["Grey You/Ascend", "Grey You/Run", "Grey You/Level"]),
+        postQuest(["Grey You/Ascend", "Grey You/Run", "Grey You/Level", "Grey You/Organ"]),
       ];
     case "casual":
       return [AftercoreQuest, CasualQuest, postQuest(["Casual/Ascend", "Casual/Run"])];
