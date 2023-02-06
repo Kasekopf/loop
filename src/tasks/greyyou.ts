@@ -13,6 +13,7 @@ import {
   myAscensions,
   myClass,
   myLevel,
+  myStorageMeat,
   runChoice,
   storageAmount,
   toInt,
@@ -221,22 +222,33 @@ export const GyouQuest: Quest = {
       limit: { tries: 1 },
     },
     {
-      name: "Level",
+      name: "Pull All",
       after: ["Ascend", "Prism"],
+      completed: () => myStorageMeat() === 0 && storageAmount($item`festive warbear bank`) === 0, // arbitrary item,
+      do: (): void => {
+        cliExecute("pull all");
+        cliExecute("refresh all");
+      },
+      limit: { tries: 1 },
+      tracking: "Run",
+    },
+    {
+      name: "Level",
+      after: ["Ascend", "Prism", "Pull All"],
       completed: () => myClass() !== $class`Grey Goo` && myLevel() >= 13,
       do: () => cliExecute("loopcasual goal=level"),
       limit: { tries: 1 },
     },
     {
       name: "Organ",
-      after: ["Ascend", "Prism", "Level"],
+      after: ["Ascend", "Prism", "Level", "Pull All"],
       completed: () => have($skill`Liver of Steel`),
       do: () => cliExecute("loopcasual goal=organ"),
       limit: { tries: 1 },
     },
     {
       name: "Duplicate",
-      after: ["Ascend", "Prism", "Level"],
+      after: ["Ascend", "Prism", "Level", "Pull All"],
       ready: () => have(args.duplicate),
       completed: () => get("lastDMTDuplication") === myAscensions(),
       prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.duplicate)}`),
