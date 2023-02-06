@@ -9,10 +9,10 @@ import {
   getWorkshed,
   hippyStoneBroken,
   itemAmount,
+  myAdventures,
   myAscensions,
   myClass,
   myLevel,
-  myTurncount,
   runChoice,
   storageAmount,
   toInt,
@@ -134,7 +134,7 @@ export const GyouQuest: Quest = {
     {
       name: "In-Run Farm",
       after: ["Ascend", "Run", ...gear.map((task) => task.name)],
-      completed: () => myTurncount() <= 40 || myClass() !== $class`Grey Goo`,
+      completed: () => myAdventures() <= 40 || myClass() !== $class`Grey Goo`,
       do: $location`Barf Mountain`,
       acquire: [{ item: $item`wad of used tape` }],
       prepare: (): void => {
