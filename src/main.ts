@@ -21,7 +21,7 @@ export const args = Args.create("loop", "A script for a full loop.", {
     default: "casual",
     options: [
       ["none", "Stay in aftercore"],
-      ["gyou", "Grey You run (broken)"],
+      ["gyou", "Grey You run"],
       ["casual", "Casual run"],
       ["custom", "Jump the gash manually"],
     ],
