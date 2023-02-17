@@ -141,7 +141,7 @@ export function pvp(after: string[]): Task[] {
 
 export const AftercoreQuest: Quest = {
   name: "Aftercore",
-  completed: () => ascended(),
+  completed: () => ascended() || args.jump,
   tasks: [
     {
       name: "Breakfast",
