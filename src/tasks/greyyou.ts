@@ -33,7 +33,6 @@ import {
   AsdonMartin,
   ensureEffect,
   get,
-  getKramcoWandererChance,
   have,
   Lifestyle,
   Macro,
@@ -184,10 +183,7 @@ export const GyouQuest: Quest = {
       outfit: {
         back: $item`unwrapped knock-off retro superhero cape`,
         weapon: $item`astral pistol`,
-        offhand:
-          getKramcoWandererChance() > 0.05
-            ? $item`Kramco Sausage-o-Matic™`
-            : $item`latte lovers member's mug`,
+        offhand: $item`latte lovers member's mug`,
         acc1: $item`lucky gold ring`,
         // acc2: $item`mafia pointer finger ring`,
         acc3: $item`mafia thumb ring`,
