@@ -24,7 +24,7 @@ import {
   set,
 } from "libram";
 import { drive } from "libram/dist/resources/2017/AsdonMartin";
-import { Quest } from "./structure";
+import { isHalloween, Quest } from "./structure";
 import { args } from "../main";
 import { canEat, pvp } from "./aftercore";
 
@@ -66,12 +66,36 @@ export function postQuest(runTasks: string[]): Quest {
         limit: { tries: 1 },
       },
       {
-        name: "Garbo",
+        name: "Garboween",
         after: [...runTasks, "Workshed", "Duplicate", "Breakfast"],
-        completed: () => (myAdventures() === 0 && !canEat()) || myInebriety() > inebrietyLimit(),
+        completed: () => !isHalloween() || !canEat() || stooperDrunk(),
+        do: () => {
+          set("valueOfAdventure", 20000);
+          cliExecute("garboween");
+          set("valueOfAdventure", args.voa);
+        },
+        limit: { tries: 1 },
+        tracking: "Garbo",
+      },
+      {
+        name: "Freecandy",
+        after: [...runTasks, "Workshed", "Duplicate", "Breakfast", "Garboween"],
+        completed: () => !isHalloween() || myAdventures() < 5 || stooperDrunk(),
+        do: () => {
+          cliExecute("freecandy treatOutfit='Ceramic Suit' familiar='Red-Nosed Snapper'");
+        },
+        outfit: { familiar: $familiar`Red-Nosed Snapper` },
+        limit: { tries: 1 },
+        tracking: "Garbo",
+      },
+      {
+        name: "Garbo",
+        after: [...runTasks, "Garboween", "Freecandy", "Workshed", "Duplicate", "Breakfast"],
+        completed: () => (myAdventures() === 0 && !canEat()) || stooperDrunk(),
         do: (): void => {
           if (have($item`can of Rain-Doh`) && !have($item`Rain-Doh blue balls`))
             use($item`can of Rain-Doh`);
+          set("valueOfAdventure", args.voa);
           cliExecute("garbo yachtzeechain");
         },
         limit: { tries: 1 },
@@ -116,4 +140,7 @@ export function postQuest(runTasks: string[]): Quest {
       },
     ],
   };
+}
+function stooperDrunk(): boolean {
+  throw new Error("Function not implemented.");
 }

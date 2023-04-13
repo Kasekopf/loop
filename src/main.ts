@@ -34,6 +34,14 @@ export const args = Args.create("loop", "A script for a full loop.", {
   abort: Args.string({
     help: "If given, abort during the prepare() step for the task with matching name.",
   }),
+  skipholiday: Args.flag({
+    help: "If given, ignore the fact that today is a holiday.",
+    default: false,
+  }),
+  voa: Args.number({
+    help: "Value of adventure to use for garbo",
+    default: 6700,
+  }),
 });
 export function main(command?: string): void {
   Args.fill(args, command);

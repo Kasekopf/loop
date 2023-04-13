@@ -27,10 +27,11 @@ import {
   get,
   have,
   Macro,
+  set,
   uneffect,
 } from "libram";
 import { args } from "../main";
-import { ascended, Quest, Task } from "./structure";
+import { ascended, isHalloween, Quest, Task } from "./structure";
 
 export function canEat(): boolean {
   return (
@@ -51,12 +52,36 @@ function stooperDrunk(): boolean {
 export function garboAscend(after: string[], garbo: string): Task[] {
   return [
     {
-      name: "Garbo",
+      name: "Garboween",
       after: after,
+      completed: () => !isHalloween() || !canEat() || stooperDrunk(),
+      do: () => {
+        set("valueOfAdventure", 20000);
+        cliExecute("garboween");
+        set("valueOfAdventure", args.voa);
+      },
+      limit: { tries: 1 },
+      tracking: "Garbo",
+    },
+    {
+      name: "Freecandy",
+      after: [...after, "Garboween"],
+      completed: () => !isHalloween() || myAdventures() < 5 || stooperDrunk(),
+      do: () => {
+        cliExecute("freecandy treatOutfit='Ceramic Suit' familiar='Red-Nosed Snapper'");
+      },
+      outfit: { familiar: $familiar`Red-Nosed Snapper` },
+      limit: { tries: 1 },
+      tracking: "Garbo",
+    },
+    {
+      name: "Garbo",
+      after: [...after, "Garboween", "Freecandy"],
       completed: () => (myAdventures() === 0 && !canEat()) || stooperDrunk(),
       do: () => {
         if (have($item`can of Rain-Doh`) && !have($item`Rain-Doh blue balls`))
           use($item`can of Rain-Doh`);
+        set("valueOfAdventure", args.voa);
         cliExecute(garbo);
       },
       limit: { tries: 1 },
