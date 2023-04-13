@@ -1,6 +1,6 @@
 import { step } from "grimoire-kolmafia";
 import { cliExecute, hippyStoneBroken, myAdventures, visitUrl } from "kolmafia";
-import { $class, $item, $skill, ascend, have, Lifestyle, Paths, prepareAscension } from "libram";
+import { $class, $item, $path, $skill, ascend, have, Lifestyle, prepareAscension } from "libram";
 import { ascended, Quest } from "./structure";
 import { args } from "../main";
 
@@ -13,7 +13,6 @@ export const CasualQuest: Quest = {
       after: ["Aftercore/Overdrunk", "Aftercore/Fights"],
       do: (): void => {
         prepareAscension({
-          workshed: "cold medicine cabinet",
           garden: "packet of thanksgarden seeds",
           eudora: "GameInformPowerDailyPro subscription card",
           chateau: {
@@ -24,7 +23,7 @@ export const CasualQuest: Quest = {
         });
 
         ascend(
-          Paths.Unrestricted,
+          $path.none,
           $class`Seal Clubber`,
           Lifestyle.casual,
           "knoll",

@@ -28,6 +28,7 @@ import {
   $item,
   $location,
   $monster,
+  $path,
   $skill,
   ascend,
   AsdonMartin,
@@ -37,7 +38,6 @@ import {
   Lifestyle,
   Macro,
   Pantogram,
-  Paths,
   prepareAscension,
   RetroCape,
   set,
@@ -100,7 +100,7 @@ export const GyouQuest: Quest = {
           eudora: "Our Daily Candles™ order form",
         });
         ascend(
-          Paths.GreyYou,
+          $path`Grey You`,
           // eslint-disable-next-line libram/verify-constants
           $class`Grey Goo`,
           Lifestyle.softcore,
