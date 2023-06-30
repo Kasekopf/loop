@@ -3,16 +3,21 @@ import {
   Coinmaster,
   gamedayToInt,
   gametimeToInt,
+  getCloset,
+  getStorage,
   historicalAge,
   historicalPrice,
   Item,
   myAscensions,
+  myClosetMeat,
+  myStorageMeat,
   myTurncount,
   print,
   sellPrice,
   toInt,
+  toItem,
 } from "kolmafia";
-import { $item, $items, get, getSaleValue, Session, set, sumNumbers } from "libram";
+import { $item, $items, get, getFoldGroup, getSaleValue, Session, set, sumNumbers } from "libram";
 
 function currency(...items: Item[]): () => number {
   const unitCost: [Item, number][] = items.map((i) => {
@@ -212,7 +217,7 @@ export class ProfitTracker {
     this.setting = new DailySetting<Records>(key);
 
     this.records = this.setting.get({});
-    this.session = Session.current();
+    this.session = getCurrentSession();
     this.turns = myTurncount();
     this.hours = gametimeToInt() / (1000 * 60 * 60);
     this.ascensions = myAscensions();
@@ -226,7 +231,7 @@ export class ProfitTracker {
   }
 
   reset(): void {
-    this.session = Session.current();
+    this.session = getCurrentSession();
     this.turns = myTurncount();
     this.hours = gametimeToInt() / (1000 * 60 * 60);
     this.ascensions = myAscensions();
@@ -260,7 +265,7 @@ export class ProfitTracker {
       this.session.items.set(item, 1 + (this.session.items.get(item) ?? 0));
     }
 
-    const diff = Session.current().diff(this.session);
+    const diff = getCurrentSession().diff(this.session);
     if (!(tag in this.records)) this.records[tag] = { meat: 0, items: 0, turns: 0, hours: 0 };
 
     const value = diff.value(garboValue);
@@ -283,6 +288,78 @@ export class ProfitTracker {
   save(): void {
     this.setting.set(this.records);
   }
+}
+
+function getCurrentSession(): Session {
+  /*
+  Libram includes getStorage() in the generated session, since pulling an
+  item in-ronin does indeed modify the underlying mafia session tracking,
+  i.e., -1 from getStorage and +1 from mySessionItems.
+
+  But pulling all items out of ronin does not modify the underling mafia
+  session tracking, i.e., -1 from getStorage but +0 from mySessionItems.
+
+  Since we already handle in-ronin pulls above (see ProfitTracker.pulled),
+  we just ignore getStorage from the Session.
+
+  This should be changed if libram/mafia changes how stored items are tracked.
+  */
+
+  const manyToOne = (primary: Item, mapped: Item[]): [Item, Item][] =>
+    mapped.map((target: Item) => [target, primary]);
+
+  const foldable = (item: Item): [Item, Item][] => manyToOne(item, getFoldGroup(item));
+
+  const itemMappings = new Map<Item, Item>([
+    ...foldable($item`liar's pants`),
+    ...foldable($item`ice pick`),
+    ...manyToOne($item`Spooky Putty sheet`, [
+      $item`Spooky Putty monster`,
+      ...getFoldGroup($item`Spooky Putty sheet`),
+    ]),
+    ...foldable($item`stinky cheese sword`),
+    ...foldable($item`naughty paper shuriken`),
+    ...foldable($item`Loathing Legion knife`),
+    ...foldable($item`deceased crimbo tree`),
+    ...foldable($item`makeshift turban`),
+    ...foldable($item`turtle wax shield`),
+    ...foldable($item`metallic foil bow`),
+    ...foldable($item`ironic moustache`),
+    ...foldable($item`bugged balaclava`),
+    ...foldable($item`toggle switch (Bartend)`),
+    ...foldable($item`mushroom cap`),
+    ...manyToOne($item`can of Rain-Doh`, $items`empty Rain-Doh can`),
+    ...manyToOne(
+      $item`meteorite fragment`,
+      $items`meteorite earring, meteorite necklace, meteorite ring`
+    ),
+    ...manyToOne(
+      $item`Sneaky Pete's leather jacket`,
+      $items`Sneaky Pete's leather jacket (collar popped)`
+    ),
+    ...manyToOne($item`Boris's Helm`, $items`Boris's Helm (askew)`),
+    ...manyToOne($item`Jarlsberg's pan`, $items`Jarlsberg's pan (Cosmic portal mode)`),
+    ...manyToOne(
+      $item`tiny plastic sword`,
+      $items`grogtini, bodyslam, dirty martini, vesper, cherry bomb, sangria del diablo`
+    ),
+    ...manyToOne(
+      $item`earthenware muffin tin`,
+      $items`blueberry muffin, bran muffin, chocolate chip muffin`
+    ),
+  ]);
+
+  const result = Session.current();
+  for (const inventoryFunc of [getCloset, getStorage]) {
+    for (const [itemStr, quantity] of Object.entries(inventoryFunc())) {
+      const item = toItem(itemStr);
+      const mappedItem = itemMappings.get(item) ?? item;
+      result.register(mappedItem, -1 * quantity);
+    }
+  }
+  result.register("meat", -1 * myStorageMeat());
+  result.register("meat", -1 * myClosetMeat());
+  return result;
 }
 
 function sum(record: Records, where: (key: string) => boolean): ProfitRecord {
