@@ -42,7 +42,7 @@ export function canEat(): boolean {
   );
 }
 
-function stooperDrunk(): boolean {
+export function stooperDrunk(): boolean {
   return (
     myInebriety() > inebrietyLimit() ||
     (myInebriety() === inebrietyLimit() && myFamiliar() === $familiar`Stooper`)

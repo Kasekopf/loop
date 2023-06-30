@@ -26,7 +26,7 @@ import {
 import { drive } from "libram/dist/resources/2017/AsdonMartin";
 import { isHalloween, Quest } from "./structure";
 import { args } from "../main";
-import { canEat, pvp } from "./aftercore";
+import { canEat, pvp, stooperDrunk } from "./aftercore";
 
 export function postQuest(runTasks: string[]): Quest {
   return {
@@ -140,7 +140,4 @@ export function postQuest(runTasks: string[]): Quest {
       },
     ],
   };
-}
-function stooperDrunk(): boolean {
-  throw new Error("Function not implemented.");
 }
