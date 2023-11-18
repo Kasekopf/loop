@@ -10,12 +10,14 @@ import {
   myInebriety,
   toInt,
   use,
+  useSkill,
 } from "kolmafia";
 import {
   $effect,
   $familiar,
   $item,
   $location,
+  $skill,
   ChateauMantegna,
   get,
   have,
@@ -122,6 +124,13 @@ export function postQuest(runTasks: string[]): Quest {
         completed: () =>
           !ChateauMantegna.have() || ChateauMantegna.getCeiling() === "artificial skylight",
         do: () => ChateauMantegna.changeCeiling("artificial skylight"),
+        limit: { tries: 1 },
+      },
+      {
+        name: "Scepter",
+        after: [...runTasks, "Nightcap", "Fights"],
+        completed: () => get("_augSkillsCast", 0) >= 5 || have($effect`Offhand Remarkable`),
+        do: () => useSkill($skill`Aug. 13th: Left/Off Hander's Day!`),
         limit: { tries: 1 },
       },
       {
