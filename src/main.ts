@@ -4,6 +4,7 @@ import { Args, getTasks } from "grimoire-kolmafia";
 import { AftercoreQuest } from "./tasks/aftercore";
 import { postQuest } from "./tasks/post";
 import { GyouQuest } from "./tasks/greyyou";
+import { SmolQuest } from "./tasks/smol";
 import { CasualQuest } from "./tasks/casual";
 import { ProfitTrackingEngine } from "./engine/engine";
 
@@ -22,6 +23,7 @@ export const args = Args.create("loop", "A script for a full loop.", {
     options: [
       ["none", "Stay in aftercore"],
       ["gyou", "Grey You run"],
+      ["smol", "Shrunken Adventurer run"],
       ["casual", "Casual run"],
       ["custom", "Jump the gash manually"],
     ],
@@ -97,6 +99,8 @@ function getQuests(run: string) {
         GyouQuest,
         postQuest(["Grey You/Ascend", "Grey You/Run", "Grey You/Level", "Grey You/Organ"]),
       ];
+    case "smol":
+      return [AftercoreQuest, SmolQuest, postQuest(["Smol/Ascend", "Smol/Run", "Smol/Organ"])];
     case "casual":
       return [AftercoreQuest, CasualQuest, postQuest(["Casual/Ascend", "Casual/Run"])];
     case "custom":
