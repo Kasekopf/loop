@@ -99,15 +99,15 @@ export const GyouQuest: Quest = {
         prepareAscension({
           eudora: "Our Daily Candles™ order form",
         });
-        ascend(
-          $path`Grey You`,
-          // eslint-disable-next-line libram/verify-constants
-          $class`Grey Goo`,
-          Lifestyle.softcore,
-          "vole",
-          $item`astral six-pack`,
-          $item`astral pistol`
-        );
+
+        ascend({
+          path: $path`Grey You`,
+          playerClass: $class`Grey Goo`,
+          lifestyle: Lifestyle.softcore,
+          moon: "vole",
+          consumable: $item`astral six-pack`,
+          pet: $item`astral pistol`,
+        });
         if (visitUrl("main.php").includes("somewhat-human-shaped mass of grey goo nanites"))
           runChoice(-1);
       },

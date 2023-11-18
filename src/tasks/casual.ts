@@ -22,14 +22,14 @@ export const CasualQuest: Quest = {
           },
         });
 
-        ascend(
-          $path.none,
-          $class`Seal Clubber`,
-          Lifestyle.casual,
-          "knoll",
-          $item`astral six-pack`,
-          $item`astral pet sweater`
-        );
+        ascend({
+          path: $path.none,
+          playerClass: $class`Seal Clubber`,
+          lifestyle: Lifestyle.casual,
+          moon: "knoll",
+          consumable: $item`astral six-pack`,
+          pet: $item`astral pet sweater`,
+        });
       },
       limit: { tries: 1 },
     },
