@@ -1,13 +1,18 @@
 import { CombatStrategy, step } from "grimoire-kolmafia";
 import {
+  buy,
   cliExecute,
   hippyStoneBroken,
   myAscensions,
   myClass,
+  myFullness,
+  myInebriety,
   myStorageMeat,
   runChoice,
   storageAmount,
   toInt,
+  use,
+  useSkill,
   visitUrl,
 } from "kolmafia";
 import {
@@ -19,6 +24,8 @@ import {
   $skill,
   ascend,
   get,
+  getRemainingLiver,
+  getRemainingStomach,
   have,
   Lifestyle,
   Macro,
@@ -88,8 +95,41 @@ export const SmolQuest: Quest = {
       tracking: "Run",
     },
     {
-      name: "Organ",
+      name: "Uneat",
       after: ["Ascend", "Prism", "Pull All"],
+      completed: () => getRemainingStomach() >= 0 && getRemainingLiver() >= 0,
+      do: (): void => {
+        if (myFullness() >= 3 && myInebriety() >= 3 && !get("spiceMelangeUsed")) {
+          if (!have($item`spice melange`)) buy($item`spice melange`, 600000);
+          use($item`spice melange`);
+        }
+        if (getRemainingStomach() < 0 && get("_augSkillsCast") < 5 && !get("_aug16Cast")) {
+          useSkill($skill`Aug. 16th: Roller Coaster Day!`);
+        }
+        if (
+          getRemainingStomach() < 0 &&
+          have($item`distention pill`) &&
+          !get("_distentionPillUsed")
+        ) {
+          use($item`distention pill`);
+        }
+        if (
+          getRemainingLiver() < 0 &&
+          have($item`synthetic dog hair pill`) &&
+          !get("_syntheticDogHairPillUsed")
+        ) {
+          use($item`synthetic dog hair pill`);
+        }
+        if (getRemainingLiver() < 0 && !get("_sobrieTeaUsed")) {
+          if (!have($item`cuppa Sobrie tea`)) buy($item`cuppa Sobrie tea`, 100000);
+          use($item`cuppa Sobrie tea`);
+        }
+      },
+      limit: { tries: 1 },
+    },
+    {
+      name: "Organ",
+      after: ["Ascend", "Prism", "Pull All", "Uneat"],
       completed: () => have($skill`Liver of Steel`),
       do: () => cliExecute("loopcasual goal=organ"),
       limit: { tries: 1 },

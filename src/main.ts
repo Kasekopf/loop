@@ -97,10 +97,20 @@ function getQuests(run: string) {
       return [
         AftercoreQuest,
         GyouQuest,
-        postQuest(["Grey You/Ascend", "Grey You/Run", "Grey You/Level", "Grey You/Organ"]),
+        postQuest([
+          "Grey You/Ascend",
+          "Grey You/Run",
+          "Grey You/Level",
+          "Grey You/Organ",
+          "Grey You/Pull All",
+        ]),
       ];
     case "smol":
-      return [AftercoreQuest, SmolQuest, postQuest(["Smol/Ascend", "Smol/Run", "Smol/Organ"])];
+      return [
+        AftercoreQuest,
+        SmolQuest,
+        postQuest(["Smol/Ascend", "Smol/Run", "Smol/Organ", "Smol/Pull All", "Smol/Uneat"]),
+      ];
     case "casual":
       return [AftercoreQuest, CasualQuest, postQuest(["Casual/Ascend", "Casual/Run"])];
     case "custom":
