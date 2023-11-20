@@ -3,11 +3,14 @@ import {
   buy,
   cliExecute,
   hippyStoneBroken,
+  inebrietyLimit,
+  itemAmount,
   myAscensions,
   myClass,
   myFullness,
   myInebriety,
   myStorageMeat,
+  retrieveItem,
   runChoice,
   storageAmount,
   toInt,
@@ -17,6 +20,7 @@ import {
 } from "kolmafia";
 import {
   $class,
+  $effect,
   $familiar,
   $item,
   $location,
@@ -31,6 +35,7 @@ import {
   Macro,
   prepareAscension,
   set,
+  uneffect,
 } from "libram";
 import { ascended, Quest } from "./structure";
 import { args } from "../main";
@@ -39,12 +44,25 @@ export const SmolQuest: Quest = {
   name: "Smol",
   tasks: [
     {
+      name: "Legend Pizza",
+      after: ["Aftercore/Overdrunk", "Aftercore/Fights"],
+      completed: () => itemAmount($item`Pizza of Legend`) >= 10 || ascended(),
+      do: () => retrieveItem(10, $item`Pizza of Legend`),
+      limit: { tries: 1 },
+    },
+    {
       name: "Ascend",
       completed: () => ascended(),
-      after: ["Aftercore/Overdrunk", "Aftercore/Fights"],
+      after: ["Aftercore/Overdrunk", "Aftercore/Fights", "Legend Pizza"],
       do: (): void => {
         prepareAscension({
+          garden: "packet of tall grass seeds",
           eudora: "Our Daily Candles™ order form",
+          chateau: {
+            desk: "continental juice bar",
+            ceiling: "ceiling fan",
+            nightstand: "electric muscle stimulator",
+          },
         });
 
         ascend({
@@ -80,7 +98,7 @@ export const SmolQuest: Quest = {
       name: "Prism",
       after: ["Ascend", "Run"],
       completed: () => myClass() !== $class`Grey Goo`,
-      do: () => cliExecute("loopgyou class=1"),
+      do: () => visitUrl("place.php?whichplace=nstower&action=ns_11_prism"),
       limit: { tries: 1 },
     },
     {
@@ -97,7 +115,9 @@ export const SmolQuest: Quest = {
     {
       name: "Uneat",
       after: ["Ascend", "Prism", "Pull All"],
-      completed: () => getRemainingStomach() >= 0 && getRemainingLiver() >= 0,
+      completed: () =>
+        (getRemainingStomach() >= 0 && getRemainingLiver() >= 0) ||
+        myInebriety() > inebrietyLimit() + 5,
       do: (): void => {
         if (myFullness() >= 3 && myInebriety() >= 3 && !get("spiceMelangeUsed")) {
           if (!have($item`spice melange`)) buy($item`spice melange`, 600000);
@@ -141,6 +161,9 @@ export const SmolQuest: Quest = {
       completed: () => get("lastDMTDuplication") === myAscensions(),
       prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.duplicate)}`),
       do: $location`The Deep Machine Tunnels`,
+      post: (): void => {
+        if (have($effect`Beaten Up`)) uneffect($effect`Beaten Up`);
+      },
       choices: { 1119: 4 },
       combat: new CombatStrategy().macro(new Macro().attack().repeat()),
       outfit: { familiar: $familiar`Machine Elf`, modifier: "muscle" },
