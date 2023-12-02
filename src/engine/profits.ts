@@ -250,6 +250,10 @@ export class ProfitTracker {
       this.reset();
       return;
     }
+    if (tag === "Ignore") {
+      this.reset();
+      return;
+    }
 
     // Pulled items are tracked oddly in the Session
     // (they are included in the Session diff by default)

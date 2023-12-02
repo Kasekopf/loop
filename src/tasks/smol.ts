@@ -100,6 +100,7 @@ export const SmolQuest: Quest = {
       completed: () => myPath() !== $path`A Shrunken Adventurer am I`,
       do: () => visitUrl("place.php?whichplace=nstower&action=ns_11_prism"),
       limit: { tries: 1 },
+      tracking: "Ignore",
     },
     {
       name: "Pull All",
