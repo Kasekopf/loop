@@ -142,7 +142,7 @@ export const SmolQuest: Quest = {
           use($item`synthetic dog hair pill`);
         }
         if (getRemainingLiver() < 0 && !get("_sobrieTeaUsed")) {
-          if (!have($item`cuppa Sobrie tea`)) buy($item`cuppa Sobrie tea`, 100000);
+          if (!have($item`cuppa Sobrie tea`)) buy($item`cuppa Sobrie tea`, 1, 100000);
           use($item`cuppa Sobrie tea`);
         }
       },
