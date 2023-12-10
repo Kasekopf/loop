@@ -43,7 +43,7 @@ export function postQuest(runTasks: string[]): Quest {
             haveEffect($effect`Driving Observantly`) < 900 &&
             getWorkshed() === $item`Asdon Martin keyfob`
           )
-            drive($effect`Driving Observantly`, 900 - haveEffect($effect`Driving Observantly`));
+            drive($effect`Driving Observantly`, 900);
           use($item`cold medicine cabinet`);
         },
         limit: { tries: 1 },
