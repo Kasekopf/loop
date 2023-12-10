@@ -250,7 +250,7 @@ export class ProfitTracker {
       this.reset();
       return;
     }
-    if (tag === "Ignore") {
+    if (tag.includes("Ignore")) {
       this.reset();
       return;
     }
