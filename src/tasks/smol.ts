@@ -121,7 +121,7 @@ export const SmolQuest: Quest = {
         myInebriety() > inebrietyLimit() + 5,
       do: (): void => {
         if (myFullness() >= 3 && myInebriety() >= 3 && !get("spiceMelangeUsed")) {
-          if (!have($item`spice melange`)) buy($item`spice melange`, 600000);
+          if (!have($item`spice melange`)) buy($item`spice melange`, 1, 600000);
           use($item`spice melange`);
         }
         if (getRemainingStomach() < 0 && get("_augSkillsCast") < 5 && !get("_aug16Cast")) {
