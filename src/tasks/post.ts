@@ -73,7 +73,7 @@ export function postQuest(runTasks: string[]): Quest {
         completed: () => !isHalloween() || !canEat() || stooperDrunk(),
         do: () => {
           set("valueOfAdventure", 20000);
-          cliExecute("garboween");
+          cliExecute("garbo ween");
           set("valueOfAdventure", args.voa);
         },
         limit: { tries: 1 },
