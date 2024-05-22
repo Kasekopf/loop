@@ -6,6 +6,7 @@ import { postQuest } from "./tasks/post";
 import { GyouQuest } from "./tasks/greyyou";
 import { SmolQuest } from "./tasks/smol";
 import { CasualQuest } from "./tasks/casual";
+import { RobotQuest } from "./tasks/robot";
 import { ProfitTrackingEngine } from "./engine/engine";
 
 export const args = Args.create("loop", "A script for a full loop.", {
@@ -24,6 +25,7 @@ export const args = Args.create("loop", "A script for a full loop.", {
       ["none", "Stay in aftercore"],
       ["gyou", "Grey You run"],
       ["smol", "Shrunken Adventurer run"],
+      ["robot", "You Robot run"],
       ["casual", "Casual run"],
       ["custom", "Jump the gash manually"],
     ],
@@ -110,6 +112,12 @@ function getQuests(run: string) {
         AftercoreQuest,
         SmolQuest,
         postQuest(["Smol/Ascend", "Smol/Run", "Smol/Organ", "Smol/Pull All", "Smol/Uneat"]),
+      ];
+    case "robot":
+      return [
+        AftercoreQuest,
+        RobotQuest,
+        postQuest(["Robot/Ascend", "Robot/Run", "Robot/Organ", "Robot/Pull All"]),
       ];
     case "casual":
       return [AftercoreQuest, CasualQuest, postQuest(["Casual/Ascend", "Casual/Run"])];
