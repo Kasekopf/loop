@@ -110,6 +110,7 @@ export function garboAscend(after: string[], garbo: string): Task[] {
       prepare: () => useSkill($skill`Cannelloni Cocoon`),
       do: $location`The Bubblin' Caldera`,
       completed: () =>
+        myInebriety() > inebrietyLimit() ||
         $location`The Bubblin' Caldera`.turnsSpent >= 7 ||
         $location`The Bubblin' Caldera`.noncombatQueue.includes("Lava Dogs"),
       combat: new CombatStrategy().macro(new Macro().attack().repeat()),

@@ -56,6 +56,7 @@ export const RobotQuest: Quest = {
           consumable: $item`astral six-pack`,
           pet: $item`astral mask`,
         });
+        set("choiceAdventure1446", 1);
         if (visitUrl("main.php").includes("one made of rusty metal and scrap wiring"))
           runChoice(-1);
       },
