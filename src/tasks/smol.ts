@@ -26,6 +26,7 @@ import {
   $location,
   $path,
   $skill,
+  AprilingBandHelmet,
   ascend,
   get,
   getRemainingLiver,
@@ -147,6 +148,17 @@ export const SmolQuest: Quest = {
         }
       },
       limit: { tries: 1 },
+    },
+    {
+      name: "Reset Apriling",
+      after: ["Ascend", "Prism", "Pull All"],
+      completed: () =>
+        !AprilingBandHelmet.have() ||
+        !AprilingBandHelmet.canChangeSong() ||
+        have($effect`Apriling Band Celebration Bop`),
+      do: () => AprilingBandHelmet.changeSong("Apriling Band Celebration Bop"),
+      limit: { tries: 1 },
+      tracking: "Run",
     },
     {
       name: "Organ",

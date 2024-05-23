@@ -30,6 +30,7 @@ import {
   $monster,
   $path,
   $skill,
+  AprilingBandHelmet,
   ascend,
   AsdonMartin,
   ensureEffect,
@@ -225,6 +226,17 @@ export const GyouQuest: Quest = {
         cliExecute("pull all");
         cliExecute("refresh all");
       },
+      limit: { tries: 1 },
+      tracking: "Run",
+    },
+    {
+      name: "Reset Apriling",
+      after: ["Ascend", "Prism", "Pull All"],
+      completed: () =>
+        !AprilingBandHelmet.have() ||
+        !AprilingBandHelmet.canChangeSong() ||
+        have($effect`Apriling Band Celebration Bop`),
+      do: () => AprilingBandHelmet.changeSong("Apriling Band Celebration Bop"),
       limit: { tries: 1 },
       tracking: "Run",
     },
