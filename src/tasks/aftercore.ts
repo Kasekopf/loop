@@ -176,7 +176,7 @@ export const AftercoreQuest: Quest = {
       do: () => cliExecute("breakfast"),
       limit: { tries: 1 },
     },
-    ...garboAscend(["Breakfast"], "garbo yachtzeechain ascend"),
+    ...garboAscend(["Breakfast"], "garbo ascend workshed=mts"),
     ...pvp(["Overdrunk"]),
   ],
 };

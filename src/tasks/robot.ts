@@ -1,6 +1,7 @@
 import { CombatStrategy, step } from "grimoire-kolmafia";
 import {
   cliExecute,
+  getWorkshed,
   hippyStoneBroken,
   myAscensions,
   myPath,
@@ -8,6 +9,7 @@ import {
   runChoice,
   storageAmount,
   toInt,
+  use,
   visitUrl,
 } from "kolmafia";
 import {
@@ -45,13 +47,13 @@ export const RobotQuest: Quest = {
           chateau: {
             desk: "continental juice bar",
             ceiling: "ceiling fan",
-            nightstand: "foreign language tapes",
+            nightstand: "electric muscle stimulator",
           },
         });
 
         ascend({
           path: $path`You, Robot`,
-          playerClass: $class`Pastamancer`,
+          playerClass: $class`Seal Clubber`,
           lifestyle: Lifestyle.softcore,
           moon: "vole",
           consumable: $item`astral six-pack`,
@@ -111,15 +113,25 @@ export const RobotQuest: Quest = {
       tracking: "Run",
     },
     {
-      name: "Organ",
+      name: "Asdon",
       after: ["Ascend", "Prism", "Pull All"],
+      completed: () =>
+        getWorkshed() === $item`Asdon Martin keyfob` ||
+        get("_workshedItemUsed") ||
+        !have($item`Asdon Martin keyfob`),
+      do: () => use($item`Asdon Martin keyfob`),
+      limit: { tries: 1 },
+    },
+    {
+      name: "Organ",
+      after: ["Ascend", "Prism", "Pull All", "Asdon"],
       completed: () => have($skill`Liver of Steel`),
       do: () => cliExecute("loopcasual goal=organ"),
       limit: { tries: 1 },
     },
     {
       name: "Duplicate",
-      after: ["Ascend", "Prism", "Pull All"],
+      after: ["Ascend", "Prism", "Pull All", "Asdon"],
       ready: () => have(args.duplicate),
       completed: () => get("lastDMTDuplication") === myAscensions(),
       prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.duplicate)}`),
