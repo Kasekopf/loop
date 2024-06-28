@@ -40,10 +40,10 @@ export function postQuest(runTasks: string[]): Quest {
         completed: () => getWorkshed() === $item`cold medicine cabinet` || get("_workshedItemUsed"),
         do: (): void => {
           if (
-            haveEffect($effect`Driving Observantly`) < 1200 &&
+            haveEffect($effect`Driving Observantly`) < 1300 &&
             getWorkshed() === $item`Asdon Martin keyfob`
           )
-            drive($effect`Driving Observantly`, 1200);
+            drive($effect`Driving Observantly`, 1300);
           use($item`cold medicine cabinet`);
         },
         limit: { tries: 1 },

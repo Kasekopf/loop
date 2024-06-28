@@ -37,8 +37,7 @@ export function canEat(): boolean {
   return (
     myFullness() < fullnessLimit() ||
     mySpleenUse() < spleenLimit() ||
-    myInebriety() < inebrietyLimit() ||
-    get("currentMojoFilters") < 3
+    myInebriety() < inebrietyLimit()
   );
 }
 
