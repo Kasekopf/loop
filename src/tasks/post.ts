@@ -55,6 +55,11 @@ export function postQuest(runTasks: string[]): Quest {
         completed: () => get("lastDMTDuplication") === myAscensions(),
         prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.duplicate)}`),
         do: $location`The Deep Machine Tunnels`,
+        post: () => {
+          // Clear these to avoid interrupting garbo
+          set("_lastCombatWon", true);
+          set("_lastCombatLost", false);
+        },
         choices: { 1119: 4 },
         combat: new CombatStrategy().macro(new Macro().attack().repeat()),
         outfit: { familiar: $familiar`Machine Elf`, modifier: "muscle" },
