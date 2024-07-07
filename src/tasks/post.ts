@@ -114,7 +114,12 @@ export function postQuest(runTasks: string[]): Quest {
         name: "Nightcap",
         after: [...runTasks, "Garbo", "Wish"],
         completed: () => myInebriety() > inebrietyLimit(),
-        do: () => cliExecute("CONSUME NIGHTCAP"),
+        do: () => {
+          // Don't empty organs here
+          set("currentMojoFilters", 3);
+          set("spiceMelangeUsed", true);
+          cliExecute("CONSUME NIGHTCAP");
+        },
         limit: { tries: 1 },
       },
       ...pvp(["Nightcap"]),
