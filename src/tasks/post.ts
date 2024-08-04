@@ -16,6 +16,7 @@ import {
   $effect,
   $familiar,
   $item,
+  $items,
   $location,
   $skill,
   ChateauMantegna,
@@ -62,7 +63,11 @@ export function postQuest(runTasks: string[]): Quest {
         },
         choices: { 1119: 4 },
         combat: new CombatStrategy().macro(new Macro().attack().repeat()),
-        outfit: { familiar: $familiar`Machine Elf`, modifier: "muscle" },
+        outfit: {
+          equip: $items`Space Trip safety headphones, keg shield`,
+          familiar: $familiar`Machine Elf`,
+          modifier: "muscle",
+        },
         limit: { tries: 6 },
       },
       {
@@ -78,7 +83,7 @@ export function postQuest(runTasks: string[]): Quest {
         completed: () => !isHalloween() || !canEat() || stooperDrunk(),
         do: () => {
           set("valueOfAdventure", 20000);
-          cliExecute("garbo ween");
+          cliExecute("garbo nobarf target='witchess knight'");
           set("valueOfAdventure", args.voa);
         },
         limit: { tries: 1 },

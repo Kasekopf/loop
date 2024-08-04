@@ -56,7 +56,7 @@ export function garboAscend(after: string[], garbo: string): Task[] {
       completed: () => !isHalloween() || !canEat() || stooperDrunk(),
       do: () => {
         set("valueOfAdventure", 20000);
-        cliExecute("garbo ween");
+        cliExecute("garbo ascend nobarf target='witchess knight'");
         set("valueOfAdventure", args.voa);
       },
       limit: { tries: 1 },
