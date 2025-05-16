@@ -128,7 +128,7 @@ export const GyouQuest: Quest = {
       name: "Run",
       after: ["Ascend", "Break Stone", ...gear.map((task) => task.name)],
       completed: () => step("questL13Final") > 11,
-      do: () => cliExecute("loopgyou tune=wombat"),
+      do: () => cliExecute("loopstar tune=wombat"),
       limit: { tries: 1 },
       tracking: "Run",
     },
@@ -215,7 +215,12 @@ export const GyouQuest: Quest = {
       name: "Prism",
       after: ["Ascend", "Run", "In-Run Farm"],
       completed: () => myClass() !== $class`Grey Goo`,
-      do: () => cliExecute("loopgyou class=1"),
+      do: () => {
+        visitUrl("place.php?whichplace=nstower&action=ns_11_prism");
+        visitUrl("main.php");
+        runChoice(1);
+        runChoice(1);
+      },
       limit: { tries: 1 },
     },
     {
@@ -244,27 +249,15 @@ export const GyouQuest: Quest = {
       name: "Level",
       after: ["Ascend", "Prism", "Pull All"],
       completed: () => myClass() !== $class`Grey Goo` && myLevel() >= 13,
-      do: () => cliExecute("loopcasual goal=level"),
+      do: () => cliExecute("loopstar goal=level"),
       limit: { tries: 1 },
     },
     {
       name: "Organ",
       after: ["Ascend", "Prism", "Level", "Pull All"],
       completed: () => have($skill`Liver of Steel`),
-      do: () => cliExecute("loopcasual goal=organ"),
+      do: () => cliExecute("loopstar goal=organ"),
       limit: { tries: 1 },
-    },
-    {
-      name: "Duplicate",
-      after: ["Ascend", "Prism", "Level", "Pull All"],
-      ready: () => have(args.duplicate),
-      completed: () => get("lastDMTDuplication") === myAscensions(),
-      prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.duplicate)}`),
-      do: $location`The Deep Machine Tunnels`,
-      choices: { 1119: 4 },
-      combat: new CombatStrategy().macro(new Macro().attack().repeat()),
-      outfit: { familiar: $familiar`Machine Elf`, modifier: "muscle" },
-      limit: { tries: 6 },
     },
   ],
 };

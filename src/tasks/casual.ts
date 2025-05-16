@@ -47,14 +47,18 @@ export const CasualQuest: Quest = {
       after: ["Ascend", "Break Stone"],
       completed: () => step("questL13Final") > 11 && have($skill`Liver of Steel`),
       do: (): void => {
-        cliExecute("loopcasual fluffers=false stomach=15 workshed='Asdon Martin keyfob'");
-        if (myAdventures() === 0 && !have($skill`Liver of Steel`)) {
-          cliExecute("cast 2 ancestral recall");
-          cliExecute("loopcasual fluffers=false stomach=15");
-        }
+        cliExecute("loopstar workshed='Asdon Martin keyfob'");
       },
       limit: { tries: 1 },
       tracking: "Run",
+    },
+    {
+      name: "Prism",
+      after: ["Ascend", "Run"],
+      completed: () => step("questL13Final") === 999,
+      do: () => visitUrl("place.php?whichplace=nstower&action=ns_11_prism"),
+      limit: { tries: 1 },
+      tracking: "Ignore",
     },
   ],
 };

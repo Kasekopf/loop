@@ -7,9 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node --no-warnings --loader ts-node/esm/transpile-only ./build.mjs",
     "check": "tsc",
-    "lint": "eslint src && prettier --check .",
+    "lint": "eslint src/**/* --no-ignore && prettier --check .",
     "watch": "webpack --watch --progress",
-    "lint:fix": "eslint src --fix && prettier --check --write ."
+    "lint:fix": "eslint src/**/* --no-ignore --ignore-pattern [] --fix && prettier --check --write .",
+    "foo": "eslint --inspect-config"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.8",

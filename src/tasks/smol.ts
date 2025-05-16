@@ -91,7 +91,7 @@ export const SmolQuest: Quest = {
       name: "Run",
       after: ["Ascend", "Break Stone"],
       completed: () => step("questL13Final") > 11,
-      do: () => cliExecute("loopsmol"),
+      do: () => cliExecute("loopstar"),
       limit: { tries: 1 },
       tracking: "Run",
     },
@@ -119,7 +119,7 @@ export const SmolQuest: Quest = {
       after: ["Ascend", "Prism", "Pull All"],
       completed: () =>
         (getRemainingStomach() >= 0 && getRemainingLiver() >= 0) ||
-        myInebriety() > inebrietyLimit() + 5,
+        myInebriety() > inebrietyLimit() + 3,
       do: (): void => {
         if (myFullness() >= 3 && myInebriety() >= 3 && !get("spiceMelangeUsed")) {
           if (!have($item`spice melange`)) buy($item`spice melange`, 1, 600000);
@@ -164,23 +164,8 @@ export const SmolQuest: Quest = {
       name: "Organ",
       after: ["Ascend", "Prism", "Pull All", "Uneat"],
       completed: () => have($skill`Liver of Steel`),
-      do: () => cliExecute("loopcasual goal=organ"),
+      do: () => cliExecute("loopstar goal=organ"),
       limit: { tries: 1 },
-    },
-    {
-      name: "Duplicate",
-      after: ["Ascend", "Prism", "Pull All"],
-      ready: () => have(args.duplicate),
-      completed: () => get("lastDMTDuplication") === myAscensions(),
-      prepare: () => set("choiceAdventure1125", `1&iid=${toInt(args.duplicate)}`),
-      do: $location`The Deep Machine Tunnels`,
-      post: (): void => {
-        if (have($effect`Beaten Up`)) uneffect($effect`Beaten Up`);
-      },
-      choices: { 1119: 4 },
-      combat: new CombatStrategy().macro(new Macro().attack().repeat()),
-      outfit: { familiar: $familiar`Machine Elf`, modifier: "muscle" },
-      limit: { tries: 6 },
     },
   ],
 };

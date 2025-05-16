@@ -8,6 +8,7 @@ import {
   myAdventures,
   myAscensions,
   myInebriety,
+  print,
   toInt,
   use,
   useSkill,
@@ -132,10 +133,10 @@ export function postQuest(runTasks: string[]): Quest {
         },
         limit: { tries: 1 },
       },
-      ...pvp(["Nightcap"]),
+      // ...pvp(["Nightcap"]),
       {
         name: "Chateau Sleep",
-        after: [...runTasks, "Nightcap", "Fights"],
+        after: [...runTasks, "Nightcap"],
         completed: () =>
           !ChateauMantegna.have() || ChateauMantegna.getCeiling() === "artificial skylight",
         do: () => ChateauMantegna.changeCeiling("artificial skylight"),
@@ -143,7 +144,7 @@ export function postQuest(runTasks: string[]): Quest {
       },
       {
         name: "Scepter",
-        after: [...runTasks, "Nightcap", "Fights"],
+        after: [...runTasks, "Nightcap"],
         completed: () => get("_augSkillsCast", 0) >= 5 || have($effect`Offhand Remarkable`),
         do: () => useSkill($skill`Aug. 13th: Left/Off Hander's Day!`),
         limit: { tries: 1 },
@@ -151,7 +152,7 @@ export function postQuest(runTasks: string[]): Quest {
       {
         name: "Sleep",
         completed: () => haveInCampground($item`clockwork maid`),
-        after: [...runTasks, "Nightcap", "Fights"],
+        after: [...runTasks, "Nightcap"],
         acquire: [{ item: $item`burning cape`, optional: true }],
         do: (): void => {
           if (!haveInCampground($item`clockwork maid`)) {
@@ -159,7 +160,27 @@ export function postQuest(runTasks: string[]): Quest {
             use($item`clockwork maid`);
           }
         },
-        outfit: { modifier: "adv", familiar: $familiar`Trick-or-Treating Tot` },
+        outfit: () => {
+          if (have($effect`Offhand Remarkable`))
+            return { modifier: "adv", familiar: $familiar`Left-Hand Man` };
+          return { modifier: "adv", familiar: $familiar`Trick-or-Treating Tot` };
+        },
+        limit: { tries: 1 },
+      },
+      {
+        name: "Campfire Smoke",
+        ready: () => get("getawayCampsiteUnlocked"),
+        completed: () => !have($item`stick of firewood`),
+        after: [...runTasks, "Nightcap", "Sleep"],
+        do: (): void => {
+          let smoke = 0;
+          while (have($item`stick of firewood`)) {
+            set("choiceAdventure1394", `1&message=${smoke} Enjoy the smoke!`);
+            use(1, $item`campfire smoke`);
+            print(`Smoked ${smoke} firewoods!`);
+            smoke++;
+          }
+        },
         limit: { tries: 1 },
       },
     ],

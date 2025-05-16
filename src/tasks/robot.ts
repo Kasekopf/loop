@@ -57,7 +57,7 @@ export const RobotQuest: Quest = {
           lifestyle: Lifestyle.softcore,
           moon: "vole",
           consumable: $item`astral six-pack`,
-          pet: $item`astral mask`,
+          pet: $item`astral pet sweater`,
         });
         set("choiceAdventure1446", 1);
         if (visitUrl("main.php").includes("one made of rusty metal and scrap wiring"))
@@ -126,7 +126,7 @@ export const RobotQuest: Quest = {
       name: "Organ",
       after: ["Ascend", "Prism", "Pull All", "Asdon"],
       completed: () => have($skill`Liver of Steel`),
-      do: () => cliExecute("loopcasual goal=organ"),
+      do: () => cliExecute("loopstar goal=organ"),
       limit: { tries: 1 },
     },
   ],

@@ -120,7 +120,11 @@ function getQuests(run: string) {
         postQuest(["Robot/Ascend", "Robot/Run", "Robot/Organ", "Robot/Pull All"]),
       ];
     case "casual":
-      return [AftercoreQuest, CasualQuest, postQuest(["Casual/Ascend", "Casual/Run"])];
+      return [
+        AftercoreQuest,
+        CasualQuest,
+        postQuest(["Casual/Ascend", "Casual/Run", "Casual/Prism"]),
+      ];
     case "custom":
       return [AftercoreQuest];
     default:
